@@ -1,3 +1,9 @@
+/*
+ * IMGCAT
+ * GO PROTOTYPE
+ * 2015
+ */
+
 package http
 
 import (
