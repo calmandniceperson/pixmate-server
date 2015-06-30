@@ -1,9 +1,9 @@
 package main
 
 import (
-	"imgcat/reqh"
+	"imgcat/http"
 )
 
 func main() {
-	reqh.Init()
+	http.Init()
 }
