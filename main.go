@@ -4,6 +4,7 @@ import (
 	"io"
 	"net/http"
   "fmt"
+	"imgcat/utils"
 )
 
 func hello(w http.ResponseWriter, r *http.Request) {
@@ -14,5 +15,6 @@ func hello(w http.ResponseWriter, r *http.Request) {
 func main() {
   fmt.Println("Server running on port 8000")
 	http.HandleFunc("/", hello)
+	utils.Init()
 	http.ListenAndServe(":8000", nil)
 }
