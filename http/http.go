@@ -30,6 +30,11 @@ func Init(){
   r.HandleFunc("/people/{name}", peoplePageHandler)
 
   /*
+   * personal profile url
+   */
+   r.HandleFunc("/me", mePageHandler)
+
+  /*
    * init negroni middleware
    */
   n := negroni.New(

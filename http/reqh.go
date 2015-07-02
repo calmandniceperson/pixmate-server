@@ -36,10 +36,22 @@ type User struct{
 }
 
 func mePageHandler(w http.ResponseWriter, req *http.Request) {
-    /*t := template.New("fieldname example")
-    t, _ = t.ParseFiles("public/html/people.html")
-    p := Person{Uname: "Your"}
-    t.Execute(w, p)*/
+  user := User{"Your "}
+
+  fp := path.Join("public", "people.html")
+
+  // form template
+  tmpl, err := template.ParseFiles(fp)
+
+  if err != nil {
+    http.Error(w, err.Error(), http.StatusInternalServerError)
+    return
+  }
+
+  // return the template or print an error if one occurs
+  if err := tmpl.Execute(w, user); err != nil {
+    http.Error(w, err.Error(), http.StatusInternalServerError)
+  }
 }
 
 func peoplePageHandler(w http.ResponseWriter, req *http.Request){
@@ -50,7 +62,7 @@ func peoplePageHandler(w http.ResponseWriter, req *http.Request){
   name := vars["name"]
 
   // insert name into User object
-  user := User{name}
+  user := User{name + "'s "}
 
   fp := path.Join("public", "people.html")
 
