@@ -34,6 +34,11 @@ func Init(){
    */
    r.HandleFunc("/me", mePageHandler)
 
+   /*
+    *
+    */
+    r.Handle("/img/", http.FileServer(http.Dir("/public/img/")))
+
   /*
    * init negroni middleware
    */
@@ -45,5 +50,7 @@ func Init(){
   )
   n.UseHandler(r)
   color.Green("IMGCAT Server running on port 8000")
-  n.Run(":8000")
+
+  http.ListenAndServe(":8000", n)
+  //http.ListenAndServeTLS(port, certificate.pem, key.pem, nil) for https
 }

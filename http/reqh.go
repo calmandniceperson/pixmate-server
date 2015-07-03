@@ -79,3 +79,23 @@ func peoplePageHandler(w http.ResponseWriter, req *http.Request){
     http.Error(w, err.Error(), http.StatusInternalServerError)
   }
 }
+
+/*func imageHandler(w http.ResponseWriter, req *http.Request){
+  vars := mux.Vars(req)
+  id := vars["id"]
+  resourcePath := "/public/img/" + id + ".jpg"
+
+  if _, err := os.Stat(resourcePath); os.IsNotExist(err) {
+    resourcePath := "/public/img/" + id + ".png"
+    if _, err := os.Stat(resourcePath); os.IsNotExist(err) {
+      color.Red("error 404. Image %s could not be found.", resourcePath)
+      http.Error(w, err.Error(), http.StatusInternalServerError)
+    }else{
+  	   color.Green("INF: serving static img => %s", resourcePath)
+  	   http.ServeFile(w, req, resourcePath)
+    }
+  }else{
+	   color.Green("INF: serving static img => %s", resourcePath)
+	   http.ServeFile(w, req, resourcePath)
+  }
+}*/
