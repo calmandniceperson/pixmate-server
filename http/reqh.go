@@ -6,6 +6,7 @@ import (
   "net/http"
   "path"
   "strings"
+  "strconv"
   "github.com/fatih/color"
   "github.com/gorilla/mux"
 )
@@ -134,7 +135,7 @@ func imageHandler(w http.ResponseWriter, req *http.Request){
     if fi.Mode().IsRegular() { // if there are no mode type bits set
       //fmt.Println(fi.Name(), fi.Size(), "bytes") // would return informtion of all files in the directory
       if strings.Contains(fi.Name(), id){ // if the file name contains the given image ID
-        color.Green("INF: serving image %s (size: %s Bytes)", fi.Name(), fi.Size())
+        color.Green("INF: serving image %s (size: %s Bytes)", fi.Name(), strconv.FormatInt(fi.Size(), 10))
         if strings.Split(fi.Name(), ".")[1] == "jpg"{
           resourcePath := resourcePath + id + ".jpg"
           http.ServeFile(w, req, resourcePath)
