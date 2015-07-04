@@ -34,10 +34,12 @@ func Init(){
    */
    r.HandleFunc("/me", mePageHandler)
 
+
    /*
     *
     */
-    r.Handle("/img/", http.FileServer(http.Dir("/public/img/")))
+    //r.HandleFunc("/img/{id}.jpg", imageJPGHandler)
+    r.HandleFunc("/img/{id}", imageHandler)
 
   /*
    * init negroni middleware
