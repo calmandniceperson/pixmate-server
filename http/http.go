@@ -1,5 +1,5 @@
 /*
- * IMGCAT
+ * IMGTURLTE
  * GO PROTOTYPE
  * 2015
  */
@@ -51,7 +51,7 @@ func Init(){
     negroni.NewStatic(http.Dir("public")),
   )
   n.UseHandler(r)
-  color.Green("IMGCAT Server running on port 8000")
+  color.Green("imgturtle Server running on port 8000")
 
   http.ListenAndServe(":8000", n)
   //http.ListenAndServeTLS(port, certificate.pem, key.pem, nil) for https

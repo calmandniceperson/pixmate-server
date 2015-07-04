@@ -1,5 +1,5 @@
 /*
- * IMGCAT
+ * IMGTURTLE
  * GO PROTOTYPE
  * 2015
  */
@@ -7,7 +7,7 @@
 package main
 
 import (
-	"imgcat/http"
+	"imgturtle/http"
 )
 
 func main() {

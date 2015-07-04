@@ -1,3 +1,4 @@
+echo "welcome to imgturtle setup!"
 cd ..
 go get github.com/gorilla/mux
 go get github.com/fatih/color
