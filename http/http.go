@@ -27,7 +27,7 @@ func Init(){
   /*
    * custom profile url
    */
-  r.HandleFunc("/people/{name}", peoplePageHandler)
+  r.HandleFunc("/u/{name}", peoplePageHandler)
 
   /*
    * personal profile url
