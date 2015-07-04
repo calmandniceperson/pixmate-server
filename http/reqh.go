@@ -49,13 +49,17 @@ func mePageHandler(w http.ResponseWriter, req *http.Request) {
     tmpl, err := template.ParseFiles(fp)
 
     if err != nil {
+      color.Red("ERR: 500. Couldn't parse template.")
       http.Error(w, err.Error(), http.StatusInternalServerError)
       return
     }
 
     // return the template or print an error if one occurs
     if err := tmpl.Execute(w, user); err != nil {
+      color.Red("ERR: 500. Couldn't return template.")
       http.Error(w, err.Error(), http.StatusInternalServerError)
+    }else{
+      color.Green("INF: serving static file => %s", "people.html (me)")
     }
   }
 }
@@ -77,13 +81,17 @@ func peoplePageHandler(w http.ResponseWriter, req *http.Request){
     tmpl, err := template.ParseFiles(fp)
 
     if err != nil {
+      color.Red("ERR: 500. Couldn't parse template.")
       http.Error(w, err.Error(), http.StatusInternalServerError)
       return
     }
 
     // return the template or print an error if one occurs
     if err := tmpl.Execute(w, user); err != nil {
+      color.Red("ERR: 500. Couldn't return template.")
       http.Error(w, err.Error(), http.StatusInternalServerError)
+    }else{
+      color.Green("INF: serving static file => %s", "people.html")
     }
   }
 }
