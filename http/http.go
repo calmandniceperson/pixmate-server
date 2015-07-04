@@ -32,14 +32,14 @@ func Init(){
   /*
    * personal profile url
    */
-   r.HandleFunc("/me", mePageHandler)
+  r.HandleFunc("/me", mePageHandler)
 
 
-   /*
-    *
-    */
-    //r.HandleFunc("/img/{id}.jpg", imageJPGHandler)
-    r.HandleFunc("/img/{id}", imageHandler)
+  /*
+   * images
+   */
+  //r.HandleFunc("/img/{id}.jpg", imageJPGHandler)
+  r.HandleFunc("/img/{id}", imageHandler)
 
   /*
    * init negroni middleware
