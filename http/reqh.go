@@ -153,7 +153,6 @@ func imageHandler(w http.ResponseWriter, req *http.Request){
         return
       }
       if fi.Mode().IsRegular() { // if there are no mode type bits set
-        //fmt.Println(fi.Name(), fi.Size(), "bytes") // would return informtion of all files in the directory
         if strings.Contains(fi.Name(), id){ // if the file name contains the given image ID
           img := Img{fi.Name(), (fi.Name())}
           fp /*file path*/ := path.Join("public", "img.html")
