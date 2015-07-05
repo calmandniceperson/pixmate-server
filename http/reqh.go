@@ -96,6 +96,11 @@ func peoplePageHandler(w http.ResponseWriter, req *http.Request){
   }
 }
 
+type Img struct{
+  ImgTitle string
+  ImgFilePath string
+}
+
 func imageHandler(w http.ResponseWriter, req *http.Request){
   if req.Method == "GET"{
     /*
@@ -150,16 +155,23 @@ func imageHandler(w http.ResponseWriter, req *http.Request){
       if fi.Mode().IsRegular() { // if there are no mode type bits set
         //fmt.Println(fi.Name(), fi.Size(), "bytes") // would return informtion of all files in the directory
         if strings.Contains(fi.Name(), id){ // if the file name contains the given image ID
-          color.Green("INF: serving image => %s (size: %s Bytes)", fi.Name(), strconv.FormatInt(fi.Size(), 10))
-          if strings.Split(fi.Name(), ".")[1] == "jpg"{
-            resourcePath := resourcePath + id + ".jpg"
-            http.ServeFile(w, req, resourcePath)
-          }else if strings.Split(fi.Name(), ".")[1] == "png"{
-            resourcePath := resourcePath + id + ".png"
-            http.ServeFile(w, req, resourcePath)
-          }else if strings.Split(fi.Name(), ".")[1] == "gif"{
-            resourcePath := resourcePath + id + ".gif"
-            http.ServeFile(w, req, resourcePath)
+          img := Img{fi.Name(), (fi.Name())}
+          fp /*file path*/ := path.Join("public", "img.html")
+          tmpl, err := template.ParseFiles(fp)
+
+          if err != nil {
+            color.Red("ERR: 500. Couldn't parse template.")
+            http.Error(w, err.Error(), http.StatusInternalServerError)
+            return
+          }
+
+          // return the template or print an error if one occurs
+          if err := tmpl.Execute(w, img); err != nil {
+            color.Red("ERR: 500. Couldn't return template.")
+            http.Error(w, err.Error(), http.StatusInternalServerError)
+          }else{
+            color.Green("INF: serving static file => %s with image %s (size: %s Bytes)", "img.html", fi.Name(), strconv.FormatInt(fi.Size(), 10))
+            matches++
           }
         }
       }
