@@ -7,52 +7,52 @@
 package http
 
 import (
-  "net/http"
-  "github.com/gorilla/mux"
-  "github.com/fatih/color"
-  "github.com/codegangsta/negroni"
+	"net/http"
+
+	"github.com/codegangsta/negroni"
+	"github.com/fatih/color"
+	"github.com/gorilla/mux"
 )
 
 /*
  * initialise http server
  */
-func Init(){
-  r := mux.NewRouter().StrictSlash(false)
+func Init() {
+	r := mux.NewRouter().StrictSlash(false)
 
-  /*
-   * main page
-   */
-  r.HandleFunc("/", mainPageHandler)
+	/*
+	 * main page
+	 */
+	r.HandleFunc("/", mainPageHandler)
 
-  /*
-   * custom profile url
-   */
-  r.HandleFunc("/u/{name}", peoplePageHandler)
+	/*
+	 * custom profile url
+	 */
+	r.HandleFunc("/u/{name}", peoplePageHandler)
 
-  /*
-   * personal profile url
-   */
-  r.HandleFunc("/me", mePageHandler)
+	/*
+	 * personal profile url
+	 */
+	r.HandleFunc("/me", mePageHandler)
 
+	/*
+	 * images
+	 */
+	//r.HandleFunc("/img/{id}.jpg", imageJPGHandler)
+	r.HandleFunc("/img/{id}", imageHandler)
 
-  /*
-   * images
-   */
-  //r.HandleFunc("/img/{id}.jpg", imageJPGHandler)
-  r.HandleFunc("/img/{id}", imageHandler)
+	/*
+	 * init negroni middleware
+	 */
+	n := negroni.New(
+		negroni.NewRecovery(),
+		negroni.HandlerFunc(MiddleWare),
+		//negroni.NewLogger(),
+		negroni.NewStatic(http.Dir("public")),
+	)
+	n.UseHandler(r)
+	color.Green("imgturtle Server running on port 8000")
 
-  /*
-   * init negroni middleware
-   */
-  n := negroni.New(
-    negroni.NewRecovery(),
-    negroni.HandlerFunc(MiddleWare),
-    //negroni.NewLogger(),
-    negroni.NewStatic(http.Dir("public")),
-  )
-  n.UseHandler(r)
-  color.Green("imgturtle Server running on port 8000")
-
-  http.ListenAndServe(":8000", n)
-  //http.ListenAndServeTLS(port, certificate.pem, key.pem, nil) for https
+	http.ListenAndServe(":8000", n)
+	//http.ListenAndServeTLS(port, certificate.pem, key.pem, nil) for https
 }
