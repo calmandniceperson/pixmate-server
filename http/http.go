@@ -14,10 +14,9 @@ import (
 	"github.com/gorilla/mux"
 )
 
-/*
- * initialise http server
- */
-func Init() {
+// Start is the http packages launch method
+// It creates all the routes, adds negroni logging and starts the server
+func Start() {
 	r := mux.NewRouter().StrictSlash(false)
 
 	/*
