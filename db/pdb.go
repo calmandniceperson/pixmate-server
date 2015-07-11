@@ -9,7 +9,9 @@ import (
 	_ "github.com/lib/pq"
 )
 
-func Init() {
+// Start is the database package launch method
+// it enters or fetches the data required for the database
+func Start() {
 	/*
 	 * allow user to enter db data
 	 * used instead of environment variables

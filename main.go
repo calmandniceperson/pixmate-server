@@ -15,7 +15,7 @@ import (
 )
 
 func main() {
-	db.Init()
+	db.Start()
 
 	if runtime.GOOS == "windows" {
 		cmd := exec.Command("cls")
@@ -27,5 +27,5 @@ func main() {
 		cmd.Run()
 	}
 
-	http.Init()
+	http.Start()
 }
