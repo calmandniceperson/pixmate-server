@@ -155,7 +155,7 @@ func imageHandler(w http.ResponseWriter, req *http.Request) {
 			}
 			if fi.Mode().IsRegular() { // if there are no mode type bits set
 				if strings.Split(fi.Name(), ".")[0] == id { // if the file name matches the given image ID
-					img := Img{fi.Name(), (fi.Name())}
+					img := Img{strings.Split(fi.Name(), ".")[0], (fi.Name())}
 					fp /*file path*/ := path.Join("public", "img.html")
 					tmpl, err := template.ParseFiles(fp)
 
