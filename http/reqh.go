@@ -12,6 +12,8 @@ import (
 	"github.com/gorilla/mux"
 )
 
+// MiddleWare describes a process (like checking for a valid user id)
+// on every request it is being used on
 func MiddleWare(rw http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 	if true { // for the time being in development
 		next(rw, r)
@@ -36,6 +38,8 @@ func mainPageHandler(w http.ResponseWriter, req *http.Request) {
 	}
 }
 
+// User struct stores user data
+// to fill into the user's profile page
 type User struct {
 	Uname string
 }
@@ -97,6 +101,9 @@ func peoplePageHandler(w http.ResponseWriter, req *http.Request) {
 	}
 }
 
+// Img struct stores image data
+// in order to display the correct image and its data
+// in the image page
 type Img struct {
 	ImgTitle    string
 	ImgFilePath string
