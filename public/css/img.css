@@ -1,3 +1,15 @@
-h1 {
+body {
   font-family: 'Roboto', sans-serif;
+}
+
+#container_img {
+  margin-left: 4%;
+  width: 70%;
+  position: absolute;
+  float: left;
+  top: 1%;
+}
+#container_cmts {
+  position: absolute;
+  width: 10%;
 }
