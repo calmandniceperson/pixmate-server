@@ -1,6 +1,8 @@
 <html>
 
 <head>
+  <link rel="stylesheet" href="../../comp/mdl/material.min.css">
+  <script src="../../comp/mdl/material.min.js"></script>
   <link rel="stylesheet" type="text/css" href="../css/img.css">
   <link href='http://fonts.googleapis.com/css?family=Roboto:400,900' rel='stylesheet' type='text/css'>
   <title>
@@ -9,15 +11,44 @@
 </head>
 
 <body>
-  <div id="container_img">
-    <h1>{{.ImgTitle}}</h1>
-    <img src="{{.ImgFilePath}}">
-    <div id="container_cmts">
-      <p>
-        Comments...
-      </p>
+  <!-- Always shows a header, even in smaller screens. -->
+  <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+    <header class="mdl-layout__header">
+      <div class="mdl-layout__header-row">
+        <!-- Title -->
+        <span class="mdl-layout-title">imgturtle</span>
+        <!-- Add spacer, to align navigation to the right -->
+        <div class="mdl-layout-spacer"></div>
+        <!-- Navigation. Hidden in small screens. -->
+      </div>
+    </header>
+    <main class="mdl-layout__content">
+      <div class="page-content">
+        <!-- Content -->
+        <div class="content-container">
+          <div class="content content-img">
+            <center>
+              <a href={{.ImgFilePath}}>
+                <img class="content-img__img" src={{.ImgFilePath}} alt={{.ImgTitle}}/>
+              </a>
+            </center>
+            <p class="content-img__title">
+              {{.ImgTitle}}
+            </p>
+          </div>
+          <div class="content content-cmts">
+            <table>
+              <tbody>
+                <tr>
+                  <td class="content-cmts__cmt__text mdl-data-table__cell--non-numeric">Comment text...</td>
+                  <td class="content-cmts__cmt__uname mdl-data-table__cell--non-numeric">user name</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+    </main>
     </div>
-  </div>
 </body>
 
 </html>
