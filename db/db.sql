@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS imgturtle.User (
 CREATE TABLE IF NOT EXISTS imgturtle.Img (
   image_id varchar(100) primary key,
   image_title varchar(100) not null,
-  image_blob bytea not null,
+  image_path varchar(100) not null,
   image_desc varchar(400),
   date_uploaded timestamp not null,
   uploader_id bigserial not null,
