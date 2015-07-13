@@ -1,3 +1,67 @@
-h1 {
+body {
   font-family: 'Roboto', sans-serif;
+}
+
+/*
+ * HEADER
+ */
+
+.mdl-layout__header {
+  /*background-color: rgb(255, 255, 255);*/
+}
+.mdl-layout-title {
+  /*color: #000;*/
+}
+
+/*
+ * CONTENT BLOCk
+ */
+
+.content-container {
+  overflow: hidden;
+  margin-left: 11%;
+  margin-top: 2%;
+}
+.content {
+  border: 1px solid rgba(102, 102, 102, 0.61);
+  text-align: center;
+}
+.content-img {
+  float: left;
+  width: 70%;
+  height: 80%;
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+}
+.content-img > img {
+  position: relative;
+  top: 50%;
+  min-height: 100%;
+  display: block;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  min-width: 100%;
+  margin: 0 auto;
+}
+.content-img a img {
+  max-width: 100%;
+  min-height: 85%;
+  max-height: 85%;
+}
+.content-img > p {
+  text-align: left;
+  margin-left: 2%;
+  margin-top: 6%;
+  font-size: 28pt;
+}
+.content-cmts {
+  float: left;
+  height: 80%;
+  width: 18%;
+  overflow: hidden;
+}
+.content-cmts > table {
+  font-size: 10pt;
+  cursor: pointer;
 }
