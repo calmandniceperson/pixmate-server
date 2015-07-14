@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS imgturtle.User (
     user_id text default md5(random()::text),
     user_name text not null,
     user_pw text not null,
-    date_joined timestamp default null,
+    date_joined timestamp default now(),
     PRIMARY KEY(user_id, user_name)
 );
 
