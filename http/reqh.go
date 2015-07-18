@@ -1,7 +1,12 @@
 package http
 
 import (
+	"crypto/rand"
+	"errors"
+	"fmt"
 	"html/template"
+	"imgturtle/fs"
+	"io"
 	"net/http"
 	"os"
 	"path"
@@ -191,4 +196,117 @@ func imageHandler(w http.ResponseWriter, req *http.Request) {
 			w.Write([]byte("Sorry. We couldn't find an image called " + id + "."))
 		}
 	}
+}
+
+func uploadHandler(w http.ResponseWriter, req *http.Request) {
+	// Check if the image storage exists before using it
+	// if it doesn't, this function will create it
+	// This might later be moved to main.go if needed
+	fs.CreateImageStorageIfNotExists()
+
+	if req.Method == "POST" {
+		req.ParseMultipartForm(32 << 20)
+		file, fileheader, err := req.FormFile("uploadfile")
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		defer file.Close()
+		fmt.Fprintf(w, "%v", fileheader.Header)
+
+		filename, err := findAvailableName(strings.Split(fileheader.Filename, ".")[1])
+		if err != nil {
+			color.Red(err.Error())
+			return
+		}
+
+		if filename != "" {
+			filename = fs.ImgStoragePath + filename[0:2] + "/" + filename[2:4] + "/" + filename[4:6] + "/" + filename[6:8] + "/" + filename[7:len(filename)] + "." + strings.Split(fileheader.Filename, ".")[1]
+			f, err := os.OpenFile(filename, os.O_WRONLY|os.O_CREATE, 0666)
+			defer f.Close()
+			if err != nil {
+				color.Red(err.Error())
+				return
+			}
+			color.Green("INF: File " + filename + " has been created.")
+			bytesCopied, err := io.Copy(f, file)
+			if err != nil {
+				color.Red(err.Error())
+				return
+			}
+			color.Green("INF: Content of uploaded image (" + strconv.FormatInt(bytesCopied, 10) + " Bytes) has been copied to " + filename + ".")
+		}
+	}
+}
+
+func findAvailableName(fileExt string) (string, error) {
+	b := make([]byte, 16)
+	rand.Read(b)
+	filename := fmt.Sprintf("%x", b)
+
+	// check if the file already exists
+	// to instantly generate a new name
+	// before running through the whole process
+	if _, err := os.Stat(fs.ImgStoragePath + filename[0:2] + "/" + filename[2:4] + "/" + filename[4:6] + "/" + filename[6:8] + "/" + filename[9:len(filename)] + "." + fileExt); os.IsNotExist(err) {
+		// doesn't exist
+
+		// OFFSET
+		// A value to set where
+		// to start slicing the string
+		offset := 0
+
+		// CURRENTPATH
+		// Stores the path the
+		// loop has already worked through
+		currentPath := ""
+
+		// Endless, since the return or the
+		// recursive function call will end
+		// the function later on anyway
+		for true {
+
+			// If the OFFSET is lower than 8
+			// there are still directories to be created
+			// since there need to be at least 4 directories
+			if offset < 8 {
+
+				// Check if the directory that is to be created
+				// already exists.
+				//
+				// If it doesn't the directory will be created,
+				// the directory will be added to the current path
+				// and the offset will be increased by the number of
+				// letters used (2) from the filename random hash
+				if _, err := os.Stat(fs.ImgStoragePath + currentPath + filename[offset:offset+2] + "/"); os.IsNotExist(err) {
+					// doesn't exist
+					color.Cyan("INF: ../" + currentPath + filename[offset:offset+2] + "/ created.")
+					os.Mkdir(fs.ImgStoragePath+currentPath+filename[offset:offset+2]+"/", 0776)
+					currentPath += filename[offset:offset+2] + "/"
+					offset += 2
+				} else {
+					// exists
+					color.Cyan("INF: ../" + currentPath + filename[offset:offset+2] + "/ already existed and thus is not created!")
+					currentPath += filename[offset:offset+2] + "/"
+					offset += 2
+				}
+
+				// If the OFFSET is higher than 9
+				// the next step is to create the file itself.
+				// The function won't do this itself.
+				// Instead it will check, if the file exists (again, just to be sure)
+				// and if the file doesn't exist, it will return the name of the file
+				// and an empty error.
+			} else {
+				if _, err := os.Stat(fs.ImgStoragePath + currentPath + filename[offset:len(filename)] + "." + fileExt); os.IsNotExist(err) {
+					// doesn't exist
+					return filename, nil
+				}
+			}
+		}
+	} else {
+		// The file already exists
+		// so a new name has to be generated
+		findAvailableName(fileExt)
+	}
+	return "", errors.New("Something went wrong. (findAvailableName)")
 }
