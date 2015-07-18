@@ -223,7 +223,14 @@ func uploadHandler(w http.ResponseWriter, req *http.Request) {
 		}
 
 		if filename != "" {
-			filename = fs.ImgStoragePath + filename[0:2] + "/" + filename[2:4] + "/" + filename[4:6] + "/" + filename[6:8] + "/" + filename[7:len(filename)] + "." + strings.Split(fileheader.Filename, ".")[1]
+			filename = fs.ImgStoragePath +
+				filename[0:fs.ImgStorageSubDirNameLength] + "/" +
+				filename[fs.ImgStorageSubDirNameLength:fs.ImgStorageSubDirNameLength*2] + "/" +
+				filename[fs.ImgStorageSubDirNameLength*2:fs.ImgStorageSubDirNameLength*3] + "/" +
+				filename[fs.ImgStorageSubDirNameLength*3:fs.ImgStorageSubDirNameLength*4] + "/" +
+				filename[((fs.ImgStorageSubDirNameLength*4)+1):len(filename)] + "." +
+				strings.Split(fileheader.Filename, ".")[1]
+
 			f, err := os.OpenFile(filename, os.O_WRONLY|os.O_CREATE, 0666)
 			defer f.Close()
 			if err != nil {
@@ -242,14 +249,20 @@ func uploadHandler(w http.ResponseWriter, req *http.Request) {
 }
 
 func findAvailableName(fileExt string) (string, error) {
-	b := make([]byte, 16)
+	b := make([]byte, fs.ImgNameLength)
 	rand.Read(b)
 	filename := fmt.Sprintf("%x", b)
 
 	// check if the file already exists
 	// to instantly generate a new name
 	// before running through the whole process
-	if _, err := os.Stat(fs.ImgStoragePath + filename[0:2] + "/" + filename[2:4] + "/" + filename[4:6] + "/" + filename[6:8] + "/" + filename[9:len(filename)] + "." + fileExt); os.IsNotExist(err) {
+	if _, err := os.Stat(
+		fs.ImgStoragePath +
+			filename[0:fs.ImgStorageSubDirNameLength] + "/" +
+			filename[fs.ImgStorageSubDirNameLength:fs.ImgStorageSubDirNameLength*2] + "/" +
+			filename[fs.ImgStorageSubDirNameLength:fs.ImgStorageSubDirNameLength*3] + "/" +
+			filename[fs.ImgStorageSubDirNameLength*3:fs.ImgStorageSubDirNameLength*4] + "/" +
+			filename[((fs.ImgStorageSubDirNameLength*4)+1):len(filename)] + "." + fileExt); os.IsNotExist(err) {
 		// doesn't exist
 
 		// OFFSET
@@ -267,10 +280,10 @@ func findAvailableName(fileExt string) (string, error) {
 		// the function later on anyway
 		for true {
 
-			// If the OFFSET is lower than 8
+			// If the OFFSET is lower than 12
 			// there are still directories to be created
 			// since there need to be at least 4 directories
-			if offset < 8 {
+			if offset < fs.ImgStorageSubDirNameLength*4 {
 
 				// Check if the directory that is to be created
 				// already exists.
@@ -278,18 +291,18 @@ func findAvailableName(fileExt string) (string, error) {
 				// If it doesn't the directory will be created,
 				// the directory will be added to the current path
 				// and the offset will be increased by the number of
-				// letters used (2) from the filename random hash
-				if _, err := os.Stat(fs.ImgStoragePath + currentPath + filename[offset:offset+2] + "/"); os.IsNotExist(err) {
+				// letters used (3) from the filename random hash
+				if _, err := os.Stat(fs.ImgStoragePath + currentPath + filename[offset:offset+fs.ImgStorageSubDirNameLength] + "/"); os.IsNotExist(err) {
 					// doesn't exist
-					color.Cyan("INF: ../" + currentPath + filename[offset:offset+2] + "/ created.")
-					os.Mkdir(fs.ImgStoragePath+currentPath+filename[offset:offset+2]+"/", 0776)
-					currentPath += filename[offset:offset+2] + "/"
-					offset += 2
+					color.Cyan("INF: ../" + currentPath + filename[offset:offset+fs.ImgStorageSubDirNameLength] + "/ created.")
+					os.Mkdir(fs.ImgStoragePath+currentPath+filename[offset:offset+fs.ImgStorageSubDirNameLength]+"/", 0776)
+					currentPath += filename[offset:offset+fs.ImgStorageSubDirNameLength] + "/"
+					offset += fs.ImgStorageSubDirNameLength
 				} else {
 					// exists
-					color.Cyan("INF: ../" + currentPath + filename[offset:offset+2] + "/ already existed and thus is not created!")
-					currentPath += filename[offset:offset+2] + "/"
-					offset += 2
+					color.Cyan("INF: ../" + currentPath + filename[offset:offset+fs.ImgStorageSubDirNameLength] + "/ already existed and thus is not created!")
+					currentPath += filename[offset:offset+fs.ImgStorageSubDirNameLength] + "/"
+					offset += fs.ImgStorageSubDirNameLength
 				}
 
 				// If the OFFSET is higher than 9
