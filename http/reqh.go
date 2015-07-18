@@ -169,6 +169,8 @@ func imageHandler(w http.ResponseWriter, req *http.Request) {
 				if strings.Split(fi.Name(), ".")[0] == id { // if the file name matches the given image ID
 					img := Img{strings.Split(fi.Name(), ".")[0], (fi.Name())}
 					fp /*file path*/ := path.Join("public", "img.html")
+
+					// parse img.html as template
 					tmpl, err := template.ParseFiles(fp)
 
 					if err != nil {
@@ -177,7 +179,7 @@ func imageHandler(w http.ResponseWriter, req *http.Request) {
 						return
 					}
 
-					// return the template or print an error if one occurs
+					// return (execute) the template or print an error if one occurs
 					if err := tmpl.Execute(w, img); err != nil {
 						color.Red("ERR: 500. Couldn't return template.")
 						http.Error(w, err.Error(), http.StatusInternalServerError)
