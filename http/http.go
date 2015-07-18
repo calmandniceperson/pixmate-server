@@ -41,6 +41,11 @@ func Start() {
 	r.HandleFunc("/img/{id}", imageHandler)
 
 	/*
+	 * file upload
+	 */
+	r.HandleFunc("/upload", uploadHandler)
+
+	/*
 	 * init negroni middleware
 	 */
 	n := negroni.New(
