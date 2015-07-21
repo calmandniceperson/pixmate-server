@@ -1,0 +1,43 @@
+<html>
+
+<head>
+  <title>
+    Oops!
+  </title>
+  <link rel="stylesheet" type="text/css" href="../css/error.css">
+  <link href="http://fonts.googleapis.com/css?family=Roboto:400,900" rel="stylesheet" type="text/css">
+  <script src="../../comp/jquery/jquery.js"></script>
+  <script src="../../comp/jquery-ui/jquery-ui.min.js"></script>
+  <script>
+    function oopsOnMO(){
+      $("#oops_h1").fadeOut(500);
+      $("#errorc_h1").fadeIn(1000);
+    }
+
+    function ecOnMO(){
+      $("#errorc_h1").fadeOut(500);
+      $("#kitten_img").fadeIn(1000);
+    }
+
+    function kittyOnClick(){
+      $("#kitten_img").fadeOut(500);
+      $("#oops_h1").fadeIn(1000);
+    }
+  </script>
+</head>
+
+<body>
+  <div id="container">
+    <center>
+      <h1 onmouseover="oopsOnMO();" id="oops_h1">
+        Oops!
+      </h1>
+      <h1 onclick="ecOnMO();" id="errorc_h1">
+        404.
+      </h1>
+      <img onclick="kittyOnClick();" id="kitten_img" src="img/sad_kitten_404.jpg" alt="We iz sry :("/>
+    </center>
+  </div>
+</body>
+
+</html>
