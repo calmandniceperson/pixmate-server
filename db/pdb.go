@@ -23,7 +23,7 @@ func Start() {
 		pw    string
 		name  string
 	)
-	if os.Getenv("DB_UNAME") == "" && os.Getenv("DB_PW") == "" && os.Getenv("DB_NAME") == "" {
+	if os.Getenv("DB_UNAME") == "" && os.Getenv("DB_NAME") == "" {
 		reader := bufio.NewReader(os.Stdin)
 		color.Cyan("Enter db user name: ")
 		uname, _ = reader.ReadString('\n')
