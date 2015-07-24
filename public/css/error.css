@@ -2,7 +2,7 @@ body {
   font-family: 'Roboto', sans-serif;
 }
 h1 {
-  margin-top: 25%;
+  margin-top: 22%;
   font-size: 70pt;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
@@ -13,13 +13,11 @@ h1 {
 }
 #container {
   overflow: hidden;
+  background-repeat: no-repeat;
 }
-#errorc_h1 {
-  display: none;
-}
-#kitten_img {
-  margin-top: 25%;
-  width: 250px;
-  height: 200px;
-  display: none;
+.fade {
+  opacity: 1;
+  transition: opacity .5s ease-in-out;
+  -moz-transition: opacity .5s ease-in-out;
+  -webkit-transition: opacity .5s ease-in-out;
 }
