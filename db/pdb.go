@@ -2,12 +2,20 @@ package db
 
 import (
 	"bufio"
+	"crypto/rand"
+	"crypto/sha1"
 	"database/sql"
+	"errors"
+	"fmt"
 	"os"
+
+	"golang.org/x/crypto/pbkdf2"
 
 	"github.com/fatih/color"
 	_ "github.com/lib/pq"
 )
+
+var db *sql.DB
 
 // Start is the database package launch method
 // it enters or fetches the data required for the database
@@ -39,7 +47,8 @@ func Start() {
 		name = os.Getenv("DB_NAME")
 	}
 
-	db, err := sql.Open("postgres",
+	var err error
+	db, err = sql.Open("postgres",
 		"user="+uname+
 			" password="+pw+
 			" dbname="+name+
@@ -49,7 +58,6 @@ func Start() {
 		color.Red("ERR: pdb.go Init() => PostgreSQL config could not be established.")
 		color.Red(err.Error())
 	}
-	defer db.Close()
 
 	/*
 	  // test connection
@@ -102,4 +110,54 @@ func Start() {
 	    }
 	  }
 	*/
+}
+
+// InsertNewUser handles the database part of the process of
+// registering a new user
+func InsertNewUser(uname string, pwd string, email string) error {
+	rows, err := db.Query("select user_name, user_email from imgturtle.user where user_name='" + uname + "' or user_email='" + email + "'")
+	if err != nil {
+		color.Red("ERR@pdb.go@InsertNewUser() => %s", err.Error())
+	}
+
+	if rows != nil {
+		defer rows.Close()
+
+		var (
+			funame string
+			femail string
+		)
+		for rows.Next() {
+			err := rows.Scan(&funame, &femail)
+			if err != nil {
+				color.Red("ERR: pdb.go Init() => Fetched values could not be scanned.")
+				color.Red(err.Error())
+				return err
+			}
+			if funame == uname && femail == email {
+				return errors.New("User name '" + uname + "' and e-mail address '" + email + "' in use.")
+			} else if funame == uname {
+				return errors.New("User name '" + uname + "' in use.")
+			} else if femail == email {
+				return errors.New("E-mail address '" + email + "'in use.")
+			}
+		}
+	}
+
+	b := make([]byte, 32)
+	rand.Read(b)
+	salt := fmt.Sprintf("%x", b)
+
+	epw := pbkdf2.Key([]byte(pwd), []byte(salt), 4096, 32, sha1.New)
+
+	stmt, err := db.Prepare("INSERT INTO imgturtle.user(user_name,user_pw,user_email,user_hash) VALUES($1,$2,$3,$4)")
+	if err != nil {
+		return err
+	}
+	_, err = stmt.Exec(uname, epw, email, salt)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
