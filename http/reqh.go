@@ -24,13 +24,13 @@ type Page struct {
 }
 
 func errorHandler(w http.ResponseWriter, req *http.Request) {
-	color.Red("INF: request for %s. 404, not found.", req.URL.Path)
+	color.Red("INF: request for %s. 404, not found.\nINF: serving static file => %s", req.URL.Path, "error.html")
 	http.ServeFile(w, req, "public/error.html")
 }
 
 func mainPageHandler(w http.ResponseWriter, req *http.Request) {
 	if req.Method == "GET" {
-		pdata := Page{true}
+		pdata := Page{false}
 		fp /*file path*/ := path.Join("public", "welcome.html")
 		// parse img.html as template
 		tmpl, err := template.ParseFiles(fp)
