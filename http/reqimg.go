@@ -160,6 +160,9 @@ func uploadHandler(w http.ResponseWriter, req *http.Request) {
 }
 
 func findAvailableName(fileExt string) (string, error) {
+	// generate a random hash
+	// length is provided by an environment
+	// variable or user input
 	b := make([]byte, fs.ImgNameLength)
 	rand.Read(b)
 	filename := fmt.Sprintf("%x", b)
