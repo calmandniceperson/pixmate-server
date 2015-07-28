@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS imgturtle.Img (
   image_sn text not null,
   image_desc text,
   date_uploaded timestamp not null default now(),
-  uploader_id text not null,
+  uploader_id text,
   uploader_name text not null,
   FOREIGN KEY (uploader_id, uploader_name) REFERENCES imgturtle.User(user_id, user_name)
 );
