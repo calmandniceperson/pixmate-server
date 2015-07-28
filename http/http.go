@@ -32,6 +32,8 @@ func Start() {
 	// Sign in GET & POST
 	r.HandleFunc("/signin", signInHandler)
 
+	r.HandleFunc("/signup", signUpHandler)
+
 	// images
 	r.HandleFunc("/img/{id}", imageHandler)
 
