@@ -1,6 +1,8 @@
 package http
 
 import (
+	"encoding/json"
+	"imgturtle/db"
 	"net/http"
 	"path"
 	"text/template"
@@ -76,8 +78,41 @@ func signInHandler(w http.ResponseWriter, req *http.Request) {
 	// If the request is a GET request
 	// return the signin/signup page
 	if req.Method == "GET" {
-
+		color.Cyan("INF: serving static file => %s", "signin.html")
+		http.ServeFile(w, req, "public/signin.html")
 	} else if req.Method == "POST" { // If the request is a POST request sign the user in
 
+	}
+}
+
+// SignUpData stores the
+// data that is sent with a
+// signup POST request
+type SignUpData struct {
+	Uname string
+	Pwd   string
+	Email string
+}
+
+func signUpHandler(w http.ResponseWriter, req *http.Request) {
+	if req.Method == "GET" {
+		color.Cyan("INF: serving static file => %s", "signup.html")
+		http.ServeFile(w, req, "public/signup.html")
+	} else if req.Method == "POST" {
+		decoder := json.NewDecoder(req.Body)
+		var s SignUpData
+		err := decoder.Decode(&s)
+		if err != nil {
+			color.Red("ERR: Error decoding signup JSON.\n%s", err.Error())
+		}
+
+		err = db.InsertNewUser(s.Uname, s.Pwd, s.Email)
+		if err != nil {
+			color.Red(err.Error())
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		} else {
+			//http.Redirect(w, req, "/", 200)
+			http.StatusText(200)
+		}
 	}
 }
