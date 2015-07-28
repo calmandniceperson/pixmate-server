@@ -5,7 +5,9 @@ DROP TABLE IF EXISTS imgturtle.User;
 CREATE TABLE IF NOT EXISTS imgturtle.User (
     user_id text default md5(random()::text),
     user_name text not null,
-    user_pw text not null,
+    user_pw bytea not null,
+    user_email text not null,
+    user_hash text not null,
     date_joined timestamp default now(),
     PRIMARY KEY(user_id, user_name)
 );
