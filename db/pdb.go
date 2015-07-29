@@ -142,10 +142,9 @@ func CheckUserCredentials(ue string, pwd string) (bool, error) {
 			}
 			color.Red("User %s entered an invalid password.", fUname)
 			return false, errors.New("Incorrect password.")
-		} else {
-			color.Green("User %s could not be found.", ue)
-			return false, errors.New("No such user.")
 		}
+		color.Green("User %s could not be found.", ue)
+		return false, errors.New("No such user.")
 	}
 	return false, nil
 }
