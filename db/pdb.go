@@ -111,6 +111,8 @@ func Start() {
 	*/
 }
 
+// CheckUserCredentials handles the database part of the
+// login process
 func CheckUserCredentials(ue string, pwd string) (bool, error) {
 	rows, err := db.Query("select user_name, user_email, user_pw, user_hash from imgturtle.user where user_name='" + ue + "' or user_email='" + ue + "'")
 	if err != nil {
