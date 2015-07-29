@@ -9,10 +9,9 @@ import (
 	"fmt"
 	"os"
 
-	"golang.org/x/crypto/pbkdf2"
-
 	"github.com/fatih/color"
 	_ "github.com/lib/pq"
+	"golang.org/x/crypto/pbkdf2"
 )
 
 var db *sql.DB
@@ -112,6 +111,43 @@ func Start() {
 	*/
 }
 
+func CheckUserCredentials(ue string, pwd string) (bool, error) {
+	rows, err := db.Query("select user_name, user_email, user_pw, user_hash from imgturtle.user where user_name='" + ue + "' or user_email='" + ue + "'")
+	if err != nil {
+		color.Red("ERR@pdb.go@CheckUserCredentials() => %s", err.Error())
+		return false, err
+	}
+
+	if rows != nil {
+		defer rows.Close()
+
+		var (
+			fUname string
+			fEmail string
+			fPw    string
+			fHash  string
+		)
+		if rows.Next() {
+			err := rows.Scan(&fUname, &fEmail, &fPw, &fHash)
+			if err != nil {
+				color.Red("ERR: pdb.go CheckUserCredentials => Fetched values could not be scanned.")
+				color.Red(err.Error())
+				return false, err
+			}
+			if fPw == string(pbkdf2.Key([]byte(pwd), []byte(fHash), 4096, 32, sha1.New)) {
+				color.Green("User %s entered a valid password.", fUname)
+				return true, nil
+			}
+			color.Red("User %s entered an invalid password.", fUname)
+			return false, errors.New("Incorrect password.")
+		} else {
+			color.Green("User %s could not be found.", ue)
+			return false, errors.New("No such user.")
+		}
+	}
+	return false, nil
+}
+
 // InsertNewUser handles the database part of the process of
 // registering a new user
 func InsertNewUser(uname string, pwd string, email string) error {
@@ -130,7 +166,7 @@ func InsertNewUser(uname string, pwd string, email string) error {
 		for rows.Next() {
 			err := rows.Scan(&funame, &femail)
 			if err != nil {
-				color.Red("ERR: pdb.go Init() => Fetched values could not be scanned.")
+				color.Red("ERR: pdb.go InsertNewUser() => Fetched values could not be scanned.")
 				color.Red(err.Error())
 				return err
 			}

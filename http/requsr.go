@@ -37,7 +37,7 @@ func mePageHandler(w http.ResponseWriter, req *http.Request) {
 			color.Red("ERR: 500. Couldn't return template.\n%s", err.Error())
 			http.Error(w, "500 internal server error", http.StatusInternalServerError)
 		} else {
-			color.Green("INF: serving static file => %s", "people.html (me)")
+			color.Cyan("INF: serving static file => %s", "people.html (me)")
 		}
 	}
 }
@@ -69,9 +69,14 @@ func peoplePageHandler(w http.ResponseWriter, req *http.Request) {
 			color.Red("ERR: 500. Couldn't return template.")
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		} else {
-			color.Green("INF: serving static file => %s", "people.html")
+			color.Cyan("INF: serving static file => %s", "people.html")
 		}
 	}
+}
+
+type SignInData struct {
+	Ue  string
+	Pwd string
 }
 
 func signInHandler(w http.ResponseWriter, req *http.Request) {
@@ -81,7 +86,25 @@ func signInHandler(w http.ResponseWriter, req *http.Request) {
 		color.Cyan("INF: serving static file => %s", "signin.html")
 		http.ServeFile(w, req, "public/signin.html")
 	} else if req.Method == "POST" { // If the request is a POST request sign the user in
+		decoder := json.NewDecoder(req.Body)
+		var s SignInData
+		err := decoder.Decode(&s)
+		if err != nil {
+			color.Red("ERR: Error decoding signup JSON.\n%s", err.Error())
+		}
 
+		valid, err := db.CheckUserCredentials(s.Ue, s.Pwd)
+
+		if valid {
+			//http.Redirect(w, req, "/", 200)
+			http.StatusText(200)
+		} else {
+			if err != nil {
+				color.Red(err.Error())
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+		}
 	}
 }
 
