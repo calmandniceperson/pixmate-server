@@ -125,13 +125,15 @@ func uploadHandler(w http.ResponseWriter, req *http.Request) {
 			return
 		}
 		defer file.Close()
-		fmt.Fprintf(w, "%v", fileheader.Header)
 
 		filename, err := findAvailableName(strings.Split(fileheader.Filename, ".")[1])
 		if err != nil {
 			color.Red(err.Error())
 			return
 		}
+
+		fmt.Fprintf(w, "Your image was successfully uploaded! Find it at /img/%s.", filename)
+		//http.Redirect(w, req, "/me", 200) <-- doesn't work
 
 		if filename != "" {
 			filename = fs.ImgStoragePath +
