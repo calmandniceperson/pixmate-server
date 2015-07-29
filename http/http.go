@@ -17,37 +17,31 @@ import (
 // Start is the http packages launch method
 // It creates all the routes, adds negroni logging and starts the server
 func Start() {
-	r := mux.NewRouter().StrictSlash(false)
+	r := mux.NewRouter().StrictSlash(true)
+	r.NotFoundHandler = http.HandlerFunc(errorHandler)
 
-	/*
-	 * main page
-	 */
+	// main page
 	r.HandleFunc("/", mainPageHandler)
 
-	/*
-	 * custom profile url
-	 */
+	// custome profile URL
 	r.HandleFunc("/u/{name}", peoplePageHandler)
 
-	/*
-	 * personal profile url
-	 */
+	// personal profile url
 	r.HandleFunc("/me", mePageHandler)
 
-	/*
-	 * images
-	 */
-	//r.HandleFunc("/img/{id}.jpg", imageJPGHandler)
+	// Sign in GET & POST
+	r.HandleFunc("/signin", signInHandler)
+
+	r.HandleFunc("/signup", signUpHandler)
+
+	// images
 	r.HandleFunc("/img/{id}", imageHandler)
 
-	/*
-	 * file upload
-	 */
+	// file upload
 	r.HandleFunc("/upload", uploadHandler)
 
-	/*
-	 * init negroni middleware
-	 */
+	// initialise negroni
+	// include middleware, logger, etc.
 	n := negroni.New(
 		negroni.NewRecovery(),
 		negroni.HandlerFunc(MiddleWare),

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+  <title>
+    Oops!
+  </title>
+  <link rel="stylesheet" type="text/css" href="./css/error.css">
+  <link href="http://fonts.googleapis.com/css?family=Roboto:400,900" rel="stylesheet" type="text/css">
+  <script src="./comp/jquery/jquery.js"></script>
+  <script src="./comp/jquery-ui/jquery-ui.min.js"></script>
+  <script>
+    var rt = 0;
+
+    function errorOnMO() {
+      if (rt == 0) {
+        document.getElementById("error_text").style.opacity = 0;
+        window.setTimeout(function() {
+          var e = document.getElementById("error_text");
+          if (e.innerHTML != "404.") {
+            e.innerHTML = "404.";
+          } else {
+            e.innerHTML = "Oops!";
+          }
+          e.style.opacity = 1;
+          rt++;
+        }, 800);
+      }
+    }
+
+    function errorOnClick() {
+      document.getElementById("error_text").style.opacity = 0;
+      var cont = document.getElementById("container");
+      cont.style.opacity = 0;
+      window.setTimeout(function() {
+        cont.style.backgroundImage = "url(img/sad_kitten_404.jpg)";
+        cont.style.opacity = 1;
+      }, 800);
+    }
+
+    function kittyOnClick() {
+      document.getElementById("kitten_img").style.opacity = 0;
+      window.setTimeout(function() {
+        document.getElementById("error_text").style.opacity = 1;
+      }, 800);
+    }
+  </script>
+</head>
+
+<body>
+  <div id="container" class="fade">
+    <center>
+      <h1 id="error_text" class="fade" onmouseover="errorOnMO();" onclick="errorOnClick();">
+        Oops!
+      </h1>
+    </center>
+  </div>
+</body>
+
+</html>
