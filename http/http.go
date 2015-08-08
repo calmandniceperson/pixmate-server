@@ -17,6 +17,7 @@ import (
 // Start is the http packages launch method
 // It creates all the routes, adds negroni logging and starts the server
 func Start() {
+	color.Cyan("http: Starting HTTP/HTTPS server...")
 	r := mux.NewRouter().StrictSlash(true)
 	r.NotFoundHandler = http.HandlerFunc(errorHandler)
 
@@ -49,7 +50,7 @@ func Start() {
 		negroni.NewStatic(http.Dir("public")),
 	)
 	n.UseHandler(r)
-	color.Green("imgturtle Server running on port 8000")
+	color.Green("http: Running on port 8000")
 
 	http.ListenAndServe(":8000", n)
 	//http.ListenAndServeTLS(port, certificate.pem, key.pem, nil) for https
