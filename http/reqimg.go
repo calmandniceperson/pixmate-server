@@ -4,7 +4,7 @@ import (
 	"crypto/rand"
 	"errors"
 	"fmt"
-	"html/template"
+	"imgturtle/db"
 	"imgturtle/fs"
 	"io"
 	"net/http"
@@ -12,6 +12,7 @@ import (
 	"path"
 	"strconv"
 	"strings"
+	"text/template"
 
 	"github.com/fatih/color"
 	"github.com/gorilla/mux"
@@ -27,96 +28,58 @@ type Img struct {
 
 func imageHandler(w http.ResponseWriter, req *http.Request) {
 	if req.Method == "GET" {
-		/*
-		 * fetch image id from URL parameters (e.g. /img/123)
-		 */
+		// fetch image ID from url
 		vars := mux.Vars(req)
 		id := vars["id"]
 
-		/*
-		 * 1. set resource path to directory containing images
-		 * 2. check if the directory exists (if not, print an error)
-		 */
-		resourcePath := "public/img/"
-		d, err := os.Open(resourcePath)
-		if err != nil {
-			color.Red(err.Error())
-		}
-
-		/*
-		 * close the file system connection
-		 *
-		 * from GO documentation:
-		 * "Defer is used to ensure that a function call is performed
-		 * later in a program’s execution, usually for purposes of cleanup.
-		 * defer is often used where e.g. ensure and finally would be used
-		 * in other languages."
-		 */
-		defer d.Close() // this will be executed at the end of the enclosing function
-
-		/*
-		 * Read file info
-		 *
-		 * "Readdir reads the contents of the directory associated
-		 * with file and returns a slice of up to n FileInfo values"
-		 */
-		fi, err := d.Readdir(-1)
-
-		if err != nil {
-			color.Red(err.Error())
-		}
-
-		/*
-		 * Iterate through the files in /public/img
-		 * and try to find a fitting image (same name, file extension, etc.)
-		 */
-
-		matches := 0 // match count
-		for _, fi := range fi {
-			if matches > 0 {
+		if len(id) > fs.ImgNameLength {
+			if strings.Contains(id, ".") {
+				id = strings.Split(id, ".")[0]
+			}
+			found, title, ext, err := db.CheckIfImageExists(id)
+			if err != nil {
+				color.Red(err.Error())
+				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
-			if fi.Mode().IsRegular() { // if there are no mode type bits set
-				if strings.Split(fi.Name(), ".")[0] == id { // if the file name matches the given image ID
-					img := Img{strings.Split(fi.Name(), ".")[0], (fi.Name())}
-					fp /*file path*/ := path.Join("public", "img.html")
 
-					// parse img.html as template
-					tmpl, err := template.ParseFiles(fp)
+			resourcePath := "./imgstorage/" +
+				id[0:fs.ImgStorageSubDirNameLength] + "/" +
+				id[fs.ImgStorageSubDirNameLength:fs.ImgStorageSubDirNameLength*2] + "/" +
+				id[fs.ImgStorageSubDirNameLength*2:fs.ImgStorageSubDirNameLength*3] + "/" +
+				id[fs.ImgStorageSubDirNameLength*3:fs.ImgStorageSubDirNameLength*4] + "/" +
+				id[((fs.ImgStorageSubDirNameLength*4)+1):len(id)] + "." + ext
 
-					if err != nil {
-						color.Red("ERR: 500. Couldn't parse template.")
-						http.Error(w, err.Error(), http.StatusInternalServerError)
-						return
-					}
-
-					// return (execute) the template or print an error if one occurs
-					if err := tmpl.Execute(w, img); err != nil {
-						color.Red("ERR: 500. Couldn't return template.")
-						http.Error(w, err.Error(), http.StatusInternalServerError)
-					} else {
-						color.Green("INF: serving static file => %s with image %s (size: %s Bytes)", "img.html", fi.Name(), strconv.FormatInt(fi.Size(), 10))
-						matches++
-					}
+			if found == true {
+				img := Img{title, resourcePath}
+				fp := path.Join("public", "img.html")
+				tmpl, err := template.ParseFiles(fp)
+				if err != nil {
+					color.Red("ERR: 500. Couldn't parse template.")
+					http.Error(w, err.Error(), http.StatusInternalServerError)
+					return
 				}
+				// return (execute) the template or print an error if one occurs
+				color.Cyan(img.ImgFilePath)
+				if err := tmpl.Execute(w, img); err != nil {
+					color.Red("ERR: 500. Couldn't return template.")
+					http.Error(w, err.Error(), http.StatusInternalServerError)
+					return
+				}
+				color.Green("INF: serving static file => %s with image %s", "img.html", resourcePath)
+				return
+			} else {
+				http.Error(w, errors.New("Image with ID "+id+" could not be found.").Error(), http.StatusNotFound)
+				return
 			}
-		}
-
-		/*
-		 * if no images were found, return text (for now, maybe HTML later)
-		 */
-		if matches == 0 {
-			w.Write([]byte("Sorry. We couldn't find an image called " + id + "."))
+		} else {
+			http.Error(w, errors.New(id+" is not a valid ID.").Error(), http.StatusNotFound)
+			return
 		}
 	}
 }
 
 func uploadHandler(w http.ResponseWriter, req *http.Request) {
-	// Check if the image storage exists before using it
-	// if it doesn't, this function will create it
-	// This might later be moved to main.go if needed
-	fs.CreateImageStorageIfNotExists()
-
 	if req.Method == "POST" {
 		req.ParseMultipartForm(32 << 20)
 		file, fileheader, err := req.FormFile("uploadfile")
@@ -126,59 +89,85 @@ func uploadHandler(w http.ResponseWriter, req *http.Request) {
 		}
 		defer file.Close()
 
-		filename, err := findAvailableName(strings.Split(fileheader.Filename, ".")[1])
+		var id string
+		created := false
+		for created != true {
+			id = generateImageID()
+			err = db.CheckImageID(id)
+			if err != nil {
+				if err.Error() == "Image ID '"+id+"' exists." {
+					created = false
+					continue
+				} else {
+					created = false
+					color.Red(err.Error())
+					return
+				}
+			}
+			created = true
+		}
+
+		err = imageMkdir(id, strings.Split(fileheader.Filename, ".")[1])
+		if err != nil {
+			color.Red(err.Error())
+			return
+		}
+		err = db.StoreImage(id, strings.Split(fileheader.Filename, ".")[0], strings.Split(fileheader.Filename, ".")[1])
 		if err != nil {
 			color.Red(err.Error())
 			return
 		}
 
-		fmt.Fprintf(w, "Your image was successfully uploaded! Find it at /img/%s.", filename)
+		fmt.Fprintf(w, "Your image was successfully uploaded! Find it at /img/%s.", id)
 		//http.Redirect(w, req, "/me", 200) <-- doesn't work
 
-		if filename != "" {
-			filename = fs.ImgStoragePath +
-				filename[0:fs.ImgStorageSubDirNameLength] + "/" +
-				filename[fs.ImgStorageSubDirNameLength:fs.ImgStorageSubDirNameLength*2] + "/" +
-				filename[fs.ImgStorageSubDirNameLength*2:fs.ImgStorageSubDirNameLength*3] + "/" +
-				filename[fs.ImgStorageSubDirNameLength*3:fs.ImgStorageSubDirNameLength*4] + "/" +
-				filename[((fs.ImgStorageSubDirNameLength*4)+1):len(filename)] + "." +
+		if id != "" {
+			filePath := fs.ImgStoragePath +
+				id[0:fs.ImgStorageSubDirNameLength] + "/" +
+				id[fs.ImgStorageSubDirNameLength:fs.ImgStorageSubDirNameLength*2] + "/" +
+				id[fs.ImgStorageSubDirNameLength*2:fs.ImgStorageSubDirNameLength*3] + "/" +
+				id[fs.ImgStorageSubDirNameLength*3:fs.ImgStorageSubDirNameLength*4] + "/" +
+				id[((fs.ImgStorageSubDirNameLength*4)+1):len(id)] + "." +
 				strings.Split(fileheader.Filename, ".")[1]
 
-			f, err := os.OpenFile(filename, os.O_WRONLY|os.O_CREATE, 0666)
+			f, err := os.OpenFile(filePath, os.O_WRONLY|os.O_CREATE, 0666)
 			defer f.Close()
 			if err != nil {
 				color.Red(err.Error())
 				return
 			}
-			color.Green("INF: File " + filename + " has been created.")
+			color.Green("INF: File " + filePath + " has been created.")
 			bytesCopied, err := io.Copy(f, file)
 			if err != nil {
 				color.Red(err.Error())
 				return
 			}
-			color.Green("INF: Content of uploaded image (" + strconv.FormatInt(bytesCopied, 10) + " Bytes) has been copied to " + filename + ".")
+			color.Green("INF: Content of uploaded image (" + strconv.FormatInt(bytesCopied, 10) + " Bytes) has been copied to " + filePath + ".")
 		}
 	}
 }
 
-func findAvailableName(fileExt string) (string, error) {
+func generateImageID() string {
 	// generate a random hash
 	// length is provided by an environment
 	// variable or user input
 	b := make([]byte, fs.ImgNameLength)
 	rand.Read(b)
 	filename := fmt.Sprintf("%x", b)
+	return filename
+}
 
+func imageMkdir(id string, fileExt string) error {
 	// check if the file already exists
 	// to instantly generate a new name
 	// before running through the whole process
 	if _, err := os.Stat(
 		fs.ImgStoragePath +
-			filename[0:fs.ImgStorageSubDirNameLength] + "/" +
-			filename[fs.ImgStorageSubDirNameLength:fs.ImgStorageSubDirNameLength*2] + "/" +
-			filename[fs.ImgStorageSubDirNameLength:fs.ImgStorageSubDirNameLength*3] + "/" +
-			filename[fs.ImgStorageSubDirNameLength*3:fs.ImgStorageSubDirNameLength*4] + "/" +
-			filename[((fs.ImgStorageSubDirNameLength*4)+1):len(filename)] + "." + fileExt); os.IsNotExist(err) {
+			id[0:fs.ImgStorageSubDirNameLength] + "/" +
+			id[fs.ImgStorageSubDirNameLength:fs.ImgStorageSubDirNameLength*2] + "/" +
+			id[fs.ImgStorageSubDirNameLength:fs.ImgStorageSubDirNameLength*3] + "/" +
+			id[fs.ImgStorageSubDirNameLength*3:fs.ImgStorageSubDirNameLength*4] + "/" +
+			id[((fs.ImgStorageSubDirNameLength*4)+1):len(id)] + "." + fileExt); os.IsNotExist(err) {
 		// doesn't exist
 
 		// OFFSET
@@ -208,16 +197,16 @@ func findAvailableName(fileExt string) (string, error) {
 				// the directory will be added to the current path
 				// and the offset will be increased by the number of
 				// letters used (3) from the filename random hash
-				if _, err := os.Stat(fs.ImgStoragePath + currentPath + filename[offset:offset+fs.ImgStorageSubDirNameLength] + "/"); os.IsNotExist(err) {
+				if _, err := os.Stat(fs.ImgStoragePath + currentPath + id[offset:offset+fs.ImgStorageSubDirNameLength] + "/"); os.IsNotExist(err) {
 					// doesn't exist
-					color.Cyan("INF: ../" + currentPath + filename[offset:offset+fs.ImgStorageSubDirNameLength] + "/ created.")
-					os.Mkdir(fs.ImgStoragePath+currentPath+filename[offset:offset+fs.ImgStorageSubDirNameLength]+"/", 0776)
-					currentPath += filename[offset:offset+fs.ImgStorageSubDirNameLength] + "/"
+					color.Cyan("INF: ../" + currentPath + id[offset:offset+fs.ImgStorageSubDirNameLength] + "/ created.")
+					os.Mkdir(fs.ImgStoragePath+currentPath+id[offset:offset+fs.ImgStorageSubDirNameLength]+"/", 0776)
+					currentPath += id[offset:offset+fs.ImgStorageSubDirNameLength] + "/"
 					offset += fs.ImgStorageSubDirNameLength
 				} else {
 					// exists
-					color.Cyan("INF: ../" + currentPath + filename[offset:offset+fs.ImgStorageSubDirNameLength] + "/ already existed and thus is not created!")
-					currentPath += filename[offset:offset+fs.ImgStorageSubDirNameLength] + "/"
+					color.Cyan("INF: ../" + currentPath + id[offset:offset+fs.ImgStorageSubDirNameLength] + "/ already existed and thus is not created!")
+					currentPath += id[offset:offset+fs.ImgStorageSubDirNameLength] + "/"
 					offset += fs.ImgStorageSubDirNameLength
 				}
 
@@ -228,16 +217,12 @@ func findAvailableName(fileExt string) (string, error) {
 				// and if the file doesn't exist, it will return the name of the file
 				// and an empty error.
 			} else {
-				if _, err := os.Stat(fs.ImgStoragePath + currentPath + filename[offset:len(filename)] + "." + fileExt); os.IsNotExist(err) {
+				if _, err := os.Stat(fs.ImgStoragePath + currentPath + id[offset:len(id)] + "." + fileExt); os.IsNotExist(err) {
 					// doesn't exist
-					return filename, nil
+					return nil
 				}
 			}
 		}
-	} else {
-		// The file already exists
-		// so a new name has to be generated
-		findAvailableName(fileExt)
 	}
-	return "", errors.New("Something went wrong. (findAvailableName)")
+	return errors.New("Something went wrong. (findAvailableName)")
 }
