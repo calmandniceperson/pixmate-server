@@ -41,6 +41,9 @@ func Start() {
 	// file upload
 	r.HandleFunc("/upload", uploadHandler)
 
+	// errors
+	r.HandleFunc("/error", errorHandler)
+
 	// initialise negroni
 	// include middleware, logger, etc.
 	n := negroni.New(
