@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"os"
 	"strconv"
-
 	"github.com/fatih/color"
 )
 
@@ -28,7 +27,7 @@ var ImgNameLength int
 // to provide a path.
 // This image storage path will be used in http/reqh.go
 // to store images.
-func CreateImageStorageIfNotExists() {
+func Start() {
 	if os.Getenv("IMGSTORAGE_LOCATION") != "" {
 		ImgStoragePath = os.Getenv("IMGSTORAGE_LOCATION")
 	} else {
@@ -37,12 +36,13 @@ func CreateImageStorageIfNotExists() {
 		ImgStoragePath, _ = reader.ReadString('\n')
 	}
 
+	color.Cyan("fs:   Image storage is being created...")
 	if _, err := os.Stat(ImgStoragePath); os.IsNotExist(err) {
 		// doesn't exist
 		os.Mkdir(ImgStoragePath, 0776)
-		color.Cyan("INF: " + ImgStoragePath + " created.")
+		color.Cyan("fs:   " + ImgStoragePath + " created.")
 	} else {
-		color.Cyan("INF: " + ImgStoragePath + " aleady existed.")
+		color.Cyan("fs:   " + ImgStoragePath + " aleady existed.")
 	}
 
 	if os.Getenv("IMGSTORAGE_SUBDIR_LENGTH") != "" {
