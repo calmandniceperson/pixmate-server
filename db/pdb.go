@@ -198,3 +198,72 @@ func InsertNewUser(uname string, pwd string, email string) error {
 
 	return nil
 }
+
+func CheckIfImageExists(id string) (bool, string, string, error) {
+	color.Cyan(id)
+	rows, err := db.Query("select image_id, image_title, image_f_ext from imgturtle.img where image_id='" + id + "'")
+	if err != nil {
+		color.Red("ERR@pdb.go@InsertNewUser() => %s", err.Error())
+	}
+	var (
+		fid  string
+		ftit string
+		fext string
+	)
+
+	if rows != nil {
+		defer rows.Close()
+		for rows.Next() {
+			err := rows.Scan(&fid, &ftit, &fext)
+			if err != nil {
+				color.Red("ERR: pdb.go CheckIfImageExists() => Fetched values could not be scanned.")
+				color.Red(err.Error())
+				return false, "", "", err
+			}
+		}
+		if fid == id {
+			color.Cyan(ftit + " " + fext)
+			return true, ftit, fext, nil
+		}
+	}
+	return false, "", "", errors.New("No image with id " + id + " could be found.")
+}
+
+func CheckImageID(id string) error {
+	rows, err := db.Query("select image_id from imgturtle.img where image_id='" + id + "'")
+	if err != nil {
+		color.Red("ERR@pdb.go@InsertNewUser() => %s", err.Error())
+	}
+
+	if rows != nil {
+		defer rows.Close()
+
+		var fid string
+		for rows.Next() {
+			err := rows.Scan(&fid)
+			if err != nil {
+				color.Red("ERR: pdb.go InsertNewUser() => Fetched values could not be scanned.")
+				color.Red(err.Error())
+				return err
+			}
+			if fid == id {
+				return errors.New("Image ID '" + id + "' in use.")
+			}
+		}
+	}
+	return nil
+}
+
+// StoreImage stores all of an image's information in the database
+func StoreImage(id string, title string, ext string /*, desc string, uploader_id string, uploader_name string*/) error {
+	stmt, err := db.Prepare("INSERT INTO imgturtle.Img(image_id, image_title, image_f_ext) VALUES($1, $2, $3)")
+	if err != nil {
+		return err
+	}
+	_, err = stmt.Exec(id, title, ext)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
