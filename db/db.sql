@@ -14,13 +14,13 @@ CREATE TABLE IF NOT EXISTS imgturtle.User (
 
 DROP TABLE IF EXISTS imgturtle.Img;
 CREATE TABLE IF NOT EXISTS imgturtle.Img (
-  image_id text primary key default md5(random()::text),
+  image_id text primary key /*default md5(random()::text)*/,
   image_title text not null,
-  image_sn text not null,
+  image_f_ext text not null, /* file extension */
   image_desc text,
   date_uploaded timestamp not null default now(),
   uploader_id text,
-  uploader_name text not null,
+  uploader_name text,
   FOREIGN KEY (uploader_id, uploader_name) REFERENCES imgturtle.User(user_id, user_name)
 );
 
