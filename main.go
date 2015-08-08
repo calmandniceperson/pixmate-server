@@ -9,6 +9,7 @@ package main
 import (
 	"imgturtle/db"
 	"imgturtle/http"
+	"imgturtle/fs"
 	"os"
 	"os/exec"
 	"runtime"
@@ -26,6 +27,10 @@ func main() {
 		cmd.Stdout = os.Stdout
 		cmd.Run()
 	}
+
+	// Check if the image storage exists before using it
+	// if it doesn't, this function will create it
+	fs.Start()
 
 	http.Start()
 }
