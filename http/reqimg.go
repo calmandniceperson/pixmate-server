@@ -60,7 +60,6 @@ func imageHandler(w http.ResponseWriter, req *http.Request) {
 					return
 				}
 				// return (execute) the template or print an error if one occurs
-				color.Cyan(img.ImgFilePath)
 				if err := tmpl.Execute(w, img); err != nil {
 					color.Red("ERR: 500. Couldn't return template.")
 					http.Error(w, err.Error(), http.StatusInternalServerError)

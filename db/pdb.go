@@ -200,7 +200,6 @@ func InsertNewUser(uname string, pwd string, email string) error {
 }
 
 func CheckIfImageExists(id string) (bool, string, string, error) {
-	color.Cyan(id)
 	rows, err := db.Query("select image_id, image_title, image_f_ext from imgturtle.img where image_id='" + id + "'")
 	if err != nil {
 		color.Red("ERR@pdb.go@InsertNewUser() => %s", err.Error())
@@ -222,7 +221,6 @@ func CheckIfImageExists(id string) (bool, string, string, error) {
 			}
 		}
 		if fid == id {
-			color.Cyan(ftit + " " + fext)
 			return true, ftit, fext, nil
 		}
 	}
