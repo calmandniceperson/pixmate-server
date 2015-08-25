@@ -67,14 +67,12 @@ func imageHandler(w http.ResponseWriter, req *http.Request) {
 				}
 				color.Green("INF: serving static file => %s with image %s", "img.html", resourcePath)
 				return
-			} else {
-				http.Error(w, errors.New("Image with ID "+id+" could not be found.").Error(), http.StatusNotFound)
-				return
 			}
-		} else {
-			http.Error(w, errors.New(id+" is not a valid ID.").Error(), http.StatusNotFound)
+			http.Error(w, errors.New("Image with ID "+id+" could not be found.").Error(), http.StatusNotFound)
 			return
 		}
+		http.Error(w, errors.New(id+" is not a valid ID.").Error(), http.StatusNotFound)
+		return
 	}
 }
 
@@ -117,7 +115,7 @@ func uploadHandler(w http.ResponseWriter, req *http.Request) {
 			return
 		}
 
-		fmt.Fprintf(w, "Your image was successfully uploaded! Find it at /img/%s.", id)
+		fmt.Fprintf(w, "Your image was successfully uploaded! Find it at /img/%s", id)
 		//http.Redirect(w, req, "/me", 200) <-- doesn't work
 
 		if id != "" {
