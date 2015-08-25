@@ -7,6 +7,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/fatih/color"
@@ -58,13 +59,13 @@ func Start() {
 		color.Red(err.Error())
 	}
 
-	/*
-	  // test connection
-	  err = db.Ping()
-	  if err != nil{ // connection not successful
-	    color.Red("ERR: pdb.go Init() => Database connection not working.")
-	    color.Red(err.Error())
-	  }else{ // connection successful
+	// test connection
+	err = db.Ping()
+	if err != nil { // connection not successful
+		color.Red("ERR: pdb.go Init() => Database connection not working.")
+		log.Fatal(err.Error())
+	}
+	/*}else{ // connection successful
 	    /*
 	     * variables for storing the user data
 	     *
