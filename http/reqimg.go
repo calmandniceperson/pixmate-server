@@ -109,7 +109,14 @@ func uploadHandler(w http.ResponseWriter, req *http.Request) {
 			color.Red(err.Error())
 			return
 		}
-		err = db.StoreImage(id, strings.Split(fileheader.Filename, ".")[0], strings.Split(fileheader.Filename, ".")[1])
+
+		imgPath := id[0:fs.ImgStorageSubDirNameLength] + "/" +
+			id[fs.ImgStorageSubDirNameLength:fs.ImgStorageSubDirNameLength*2] + "/" +
+			id[fs.ImgStorageSubDirNameLength*2:fs.ImgStorageSubDirNameLength*3] + "/" +
+			id[fs.ImgStorageSubDirNameLength*3:fs.ImgStorageSubDirNameLength*4] + "/" +
+			id[((fs.ImgStorageSubDirNameLength*4)+1):len(id)] + "." + strings.Split(fileheader.Filename, ".")[1]
+
+		err = db.StoreImage(id, strings.Split(fileheader.Filename, ".")[0], imgPath, strings.Split(fileheader.Filename, ".")[1])
 		if err != nil {
 			color.Red(err.Error())
 			return

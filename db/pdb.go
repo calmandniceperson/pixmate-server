@@ -209,12 +209,12 @@ func CheckImageID(id string) error {
 }
 
 // StoreImage stores all of an image's information in the database
-func StoreImage(id string, title string, ext string /*, desc string, uploader_id string, uploader_name string*/) error {
-	stmt, err := db.Prepare("INSERT INTO imgturtle.Img(image_id, image_title, image_f_ext) VALUES($1, $2, $3)")
+func StoreImage(id string, title string, imgPath string, ext string /*, desc string, uploader_id string, uploader_name string*/) error {
+	stmt, err := db.Prepare("INSERT INTO imgturtle.Img(image_id, image_title, image_path, image_f_ext) VALUES($1, $2, $3, $4)")
 	if err != nil {
 		return err
 	}
-	_, err = stmt.Exec(id, title, ext)
+	_, err = stmt.Exec(id, title, imgPath, ext)
 	if err != nil {
 		return err
 	}

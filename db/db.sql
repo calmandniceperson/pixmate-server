@@ -16,6 +16,7 @@ DROP TABLE IF EXISTS imgturtle.Img;
 CREATE TABLE IF NOT EXISTS imgturtle.Img (
   image_id text primary key /*default md5(random()::text)*/,
   image_title text not null,
+  image_path text not null,
   image_f_ext text not null, /* file extension */
   image_desc text,
   date_uploaded timestamp not null default now(),
