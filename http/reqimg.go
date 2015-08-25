@@ -117,7 +117,7 @@ func uploadHandler(w http.ResponseWriter, req *http.Request) {
 			return
 		}
 
-		fmt.Fprintf(w, "Your image was successfully uploaded! Find it at /img/%s.", id)
+		fmt.Fprintf(w, "Your image was successfully uploaded! Find it at /img/%s", id)
 		//http.Redirect(w, req, "/me", 200) <-- doesn't work
 
 		if id != "" {

@@ -21,6 +21,7 @@ body {
   overflow: hidden;
   margin-left: 11%;
   margin-top: 2%;
+  margin-bottom: 5%;
 }
 .content {
   border: 1px solid rgba(102, 102, 102, 0.61);
