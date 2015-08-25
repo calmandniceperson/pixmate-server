@@ -36,22 +36,15 @@ func imageHandler(w http.ResponseWriter, req *http.Request) {
 			if strings.Contains(id, ".") {
 				id = strings.Split(id, ".")[0]
 			}
-			found, title, ext, err := db.CheckIfImageExists(id)
+			found, imgPath, title, err := db.CheckIfImageExists(id)
 			if err != nil {
 				color.Red(err.Error())
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
 
-			resourcePath := "./imgstorage/" +
-				id[0:fs.ImgStorageSubDirNameLength] + "/" +
-				id[fs.ImgStorageSubDirNameLength:fs.ImgStorageSubDirNameLength*2] + "/" +
-				id[fs.ImgStorageSubDirNameLength*2:fs.ImgStorageSubDirNameLength*3] + "/" +
-				id[fs.ImgStorageSubDirNameLength*3:fs.ImgStorageSubDirNameLength*4] + "/" +
-				id[((fs.ImgStorageSubDirNameLength*4)+1):len(id)] + "." + ext
-
 			if found == true {
-				img := Img{title, resourcePath}
+				img := Img{title, "./imgstorage/" + imgPath}
 				fp := path.Join("public", "img.html")
 				tmpl, err := template.ParseFiles(fp)
 				if err != nil {
@@ -65,7 +58,7 @@ func imageHandler(w http.ResponseWriter, req *http.Request) {
 					http.Error(w, err.Error(), http.StatusInternalServerError)
 					return
 				}
-				color.Green("INF: serving static file => %s with image %s", "img.html", resourcePath)
+				color.Green("INF: serving static file => %s with image %s", "img.html", imgPath)
 				return
 			}
 			http.Error(w, errors.New("Image with ID "+id+" could not be found.").Error(), http.StatusNotFound)
