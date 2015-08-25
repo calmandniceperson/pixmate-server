@@ -44,7 +44,7 @@ func imageHandler(w http.ResponseWriter, req *http.Request) {
 			}
 
 			if found == true {
-				img := Img{title, "/imgstrg/" + imgPath}
+				img := Img{title, "./imgstorage/" + imgPath}
 				fp := path.Join("public", "img.html")
 				tmpl, err := template.ParseFiles(fp)
 				if err != nil {

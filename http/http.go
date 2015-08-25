@@ -7,7 +7,6 @@
 package http
 
 import (
-	"imgturtle/fs"
 	"net/http"
 
 	"github.com/codegangsta/negroni"
@@ -37,7 +36,6 @@ func Start() {
 	r.HandleFunc("/signup", signUpHandler)
 
 	// images
-	r.Handle("/imgstrg/", http.StripPrefix("/img", http.FileServer(http.Dir(fs.ImgStoragePath))))
 	r.HandleFunc("/img/{id}", imageHandler)
 
 	// file upload
@@ -50,8 +48,8 @@ func Start() {
 	// include middleware, logger, etc.
 	n := negroni.New(
 		negroni.NewRecovery(),
-		negroni.HandlerFunc(MiddleWare),
-		//negroni.NewLogger(),
+		//negroni.HandlerFunc(MiddleWare),
+		negroni.NewLogger(),
 		negroni.NewStatic(http.Dir("public")),
 	)
 	n.UseHandler(r)
