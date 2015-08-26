@@ -2,8 +2,10 @@ package fs
 
 import (
 	"bufio"
+	"imgturtle/misc"
 	"os"
 	"strconv"
+
 	"github.com/fatih/color"
 )
 
@@ -21,7 +23,7 @@ var ImgStorageSubDirNameLength int
 // Stores the lengths of the images' names
 var ImgNameLength int
 
-// CreateImageStorageIfNotExists will check whether there is already
+// Start will check whether there is already
 // an image storage path in the environment variables.
 // If there is none, the user of this server will be asked
 // to provide a path.
@@ -35,14 +37,13 @@ func Start() {
 		color.Cyan("Enter location of image storage: ")
 		ImgStoragePath, _ = reader.ReadString('\n')
 	}
-
-	color.Cyan("fs:   Image storage is being created...")
+	misc.PrintMessage(2, "fs  ", "fs.go", "Start()", "Image storage is being created...")
 	if _, err := os.Stat(ImgStoragePath); os.IsNotExist(err) {
 		// doesn't exist
 		os.Mkdir(ImgStoragePath, 0776)
-		color.Cyan("fs:   " + ImgStoragePath + " created.")
+		misc.PrintMessage(2, "fs  ", "fs.go", "Start()", (ImgStoragePath + " created."))
 	} else {
-		color.Cyan("fs:   " + ImgStoragePath + " aleady existed.")
+		misc.PrintMessage(2, "fs  ", "fs.go", "Start()", (ImgStoragePath + " already existed."))
 	}
 
 	if os.Getenv("IMGSTORAGE_SUBDIR_LENGTH") != "" {

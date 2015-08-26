@@ -2,10 +2,9 @@ package http
 
 import (
 	"html/template"
+	"imgturtle/misc"
 	"net/http"
 	"path"
-
-	"github.com/fatih/color"
 )
 
 // MiddleWare describes a process (like checking for a valid user id)
@@ -24,7 +23,7 @@ type Page struct {
 }
 
 func errorHandler(w http.ResponseWriter, req *http.Request) {
-	color.Red("http: 404, %s not found.\nhttp: serving file => %s", req.URL.Path, "error.html")
+	misc.PrintMessage(1, "http", "reqh.go", "errorHandler()", req.URL.Path+" not found. Serving file error.html")
 	http.ServeFile(w, req, "public/error.html")
 }
 
@@ -35,16 +34,16 @@ func mainPageHandler(w http.ResponseWriter, req *http.Request) {
 		// parse img.html as template
 		tmpl, err := template.ParseFiles(fp)
 		if err != nil {
-			color.Red("ERR: 500. Couldn't parse template\n%s", err.Error())
+			misc.PrintMessage(1, "http", "reqh.go", "mainPageHandler()", "Couldn't parse template\n"+err.Error())
 			http.Error(w, "500 internal server error", http.StatusInternalServerError)
 			return
 		}
 		// return (execute) the template or print an error if one occurs
 		if err := tmpl.Execute(w, pdata); err != nil {
-			color.Red("ERR: 500. Couldn't return template.\n%s", err.Error())
+			misc.PrintMessage(1, "http", "reqh.go", "mainPageHandler()", "Couldn't return template\n"+err.Error())
 			http.Error(w, "500 internal server error", http.StatusInternalServerError)
 		} else {
-			color.Green("INF: serving static file => %s", "welcome.html")
+			misc.PrintMessage(0, "http", "reqh.go", "mainPageHandler()", "serving file welcome.html")
 		}
 	}
 }

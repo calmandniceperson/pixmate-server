@@ -7,7 +7,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"log"
+	"imgturtle/misc"
 	"os"
 
 	"github.com/fatih/color"
@@ -55,15 +55,15 @@ func Start() {
 			" sslmode=disable")
 
 	if err != nil {
-		color.Red("ERR: pdb.go Init() => PostgreSQL config could not be established.")
-		color.Red(err.Error())
+		misc.PrintMessage(1, "db  ", "pdb.go", "Start()", "PostgreSQL config could not be established\n."+err.Error())
+		return
 	}
 
 	// test connection
 	err = db.Ping()
 	if err != nil { // connection not successful
-		color.Red("ERR: pdb.go Init() => Database connection not working.")
-		log.Fatal(err.Error())
+		misc.PrintMessage(1, "db  ", "pdb.go", "Start()", "Database connection not working.\n"+err.Error())
+		return
 	}
 }
 
@@ -72,7 +72,7 @@ func Start() {
 func CheckUserCredentials(ue string, pwd string) (bool, error) {
 	rows, err := db.Query("select user_name, user_email, user_pw, user_hash from imgturtle.user where user_name='" + ue + "' or user_email='" + ue + "'")
 	if err != nil {
-		color.Red("ERR@pdb.go@CheckUserCredentials() => %s", err.Error())
+		misc.PrintMessage(1, "db  ", "pdb.go", "CheckUserCredentials()", err.Error())
 		return false, err
 	}
 
@@ -88,18 +88,17 @@ func CheckUserCredentials(ue string, pwd string) (bool, error) {
 		if rows.Next() {
 			err := rows.Scan(&fUname, &fEmail, &fPw, &fHash)
 			if err != nil {
-				color.Red("ERR: pdb.go CheckUserCredentials => Fetched values could not be scanned.")
-				color.Red(err.Error())
+				misc.PrintMessage(1, "db  ", "pdb.go", "CheckUserCredentials()", "Fetched values could not be scanned.\n"+err.Error())
 				return false, err
 			}
 			if fPw == string(pbkdf2.Key([]byte(pwd), []byte(fHash), 4096, 32, sha1.New)) {
-				color.Green("User %s entered a valid password.", fUname)
+				misc.PrintMessage(0, "db  ", "pdb.go", "CheckUserCredentials()", "User "+fUname+" entered a valid password.")
 				return true, nil
 			}
-			color.Red("User %s entered an invalid password.", fUname)
+			misc.PrintMessage(1, "db  ", "pdb.go", "CheckUserCredentials()", "User "+fUname+" entered an invalid password.")
 			return false, errors.New("Incorrect password.")
 		}
-		color.Green("User %s could not be found.", ue)
+		misc.PrintMessage(0, "db  ", "pdb.go", "CheckUserCredentials()", "User "+ue+" could not be found.")
 		return false, errors.New("No such user.")
 	}
 	return false, nil
@@ -110,12 +109,10 @@ func CheckUserCredentials(ue string, pwd string) (bool, error) {
 func InsertNewUser(uname string, pwd string, email string) error {
 	rows, err := db.Query("select user_name, user_email from imgturtle.user where user_name='" + uname + "' or user_email='" + email + "'")
 	if err != nil {
-		color.Red("ERR@pdb.go@InsertNewUser() => %s", err.Error())
+		misc.PrintMessage(1, "db  ", "pdb.go", "InsertNewUser()", err.Error())
 	}
-
 	if rows != nil {
 		defer rows.Close()
-
 		var (
 			funame string
 			femail string
@@ -123,7 +120,7 @@ func InsertNewUser(uname string, pwd string, email string) error {
 		for rows.Next() {
 			err := rows.Scan(&funame, &femail)
 			if err != nil {
-				color.Red("ERR: pdb.go InsertNewUser() => Fetched values could not be scanned.")
+				misc.PrintMessage(1, "db  ", "pdb.go", "InsertNewUser()", "Fetched values could not be scanned.\n"+err.Error())
 				color.Red(err.Error())
 				return err
 			}
@@ -158,21 +155,19 @@ func InsertNewUser(uname string, pwd string, email string) error {
 func CheckIfImageExists(id string) (bool, string, string, string, int, error) {
 	rows, err := db.Query("select image_id, image_title, image_path from imgturtle.img where image_id='" + id + "'")
 	if err != nil {
-		color.Red("ERR@pdb.go@InsertNewUser() => %s", 500, err.Error())
+		misc.PrintMessage(1, "db  ", "pdb.go", "CheckIfImageExists()", string(500)+err.Error())
 	}
 	var (
 		fid  string
 		ftit string
 		fpat string
 	)
-
 	if rows != nil {
 		defer rows.Close()
 		for rows.Next() {
 			err := rows.Scan(&fid, &ftit, &fpat)
 			if err != nil {
-				color.Red("ERR: pdb.go CheckIfImageExists() => Fetched values could not be scanned.")
-				color.Red(err.Error())
+				misc.PrintMessage(1, "db  ", "pdb.go", "CheckIfImageExists()", "Fetched values could not be scanned.\n"+err.Error())
 				return false, "", "", "", 500, err
 			}
 		}
@@ -186,7 +181,7 @@ func CheckIfImageExists(id string) (bool, string, string, string, int, error) {
 func CheckImageID(id string) error {
 	rows, err := db.Query("select image_id from imgturtle.img where image_id='" + id + "'")
 	if err != nil {
-		color.Red("ERR@pdb.go@InsertNewUser() => %s", err.Error())
+		misc.PrintMessage(1, "db  ", "pdb.go", "CheckImageID()", err.Error())
 	}
 
 	if rows != nil {
@@ -196,8 +191,7 @@ func CheckImageID(id string) error {
 		for rows.Next() {
 			err := rows.Scan(&fid)
 			if err != nil {
-				color.Red("ERR: pdb.go InsertNewUser() => Fetched values could not be scanned.")
-				color.Red(err.Error())
+				misc.PrintMessage(1, "db  ", "pdb.go", "CheckImageID()", "Fetched values could not be scanned.\n"+err.Error())
 				return err
 			}
 			if fid == id {
@@ -218,6 +212,5 @@ func StoreImage(id string, title string, imgPath string, ext string /*, desc str
 	if err != nil {
 		return err
 	}
-
 	return nil
 }

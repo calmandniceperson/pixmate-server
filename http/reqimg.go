@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"imgturtle/db"
 	"imgturtle/fs"
+	"imgturtle/misc"
 	"io"
 	"net/http"
 	"os"
@@ -14,7 +15,6 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/fatih/color"
 	"github.com/gorilla/mux"
 )
 
@@ -37,7 +37,7 @@ func imageHandler(w http.ResponseWriter, req *http.Request) {
 			}
 			found, imgPath, _, _, errc, err := db.CheckIfImageExists(id)
 			if err != nil {
-				color.Red("%s %s", errc, err.Error())
+				misc.PrintMessage(1, "http", "reqimg.go", "imageHandler()", (string(errc) + " " + err.Error()))
 				if errc == 500 {
 					http.Error(w, err.Error(), http.StatusInternalServerError)
 					return
@@ -70,7 +70,7 @@ func imagePageHandler(w http.ResponseWriter, req *http.Request) {
 			}
 			found, imgPath, imgID, title, errc, err := db.CheckIfImageExists(id)
 			if err != nil {
-				color.Red("%s %s", errc, err.Error())
+				misc.PrintMessage(1, "http", "reqimg.go", "imagePageHandler()", string(errc)+err.Error())
 				if errc == 500 {
 					http.Error(w, err.Error(), http.StatusInternalServerError)
 					return
@@ -84,17 +84,17 @@ func imagePageHandler(w http.ResponseWriter, req *http.Request) {
 				fp := path.Join("public", "img.html")
 				tmpl, err := template.ParseFiles(fp)
 				if err != nil {
-					color.Red("ERR: 500. Couldn't parse template.")
+					misc.PrintMessage(1, "http", "reqimg.go", "imagePageHandler()", "500. Couldn't parse template.")
 					http.Error(w, err.Error(), http.StatusInternalServerError)
 					return
 				}
 				// return (execute) the template or print an error if one occurs
 				if err := tmpl.Execute(w, img); err != nil {
-					color.Red("ERR: 500. Couldn't return template.")
+					misc.PrintMessage(1, "http", "reqimg.go", "imagePageHandler()", "500. Couldn't return template.")
 					http.Error(w, err.Error(), http.StatusInternalServerError)
 					return
 				}
-				color.Green("INF: serving static file => %s with image %s", "img.html", imgPath)
+				misc.PrintMessage(0, "http", "reqimg.go", "imagePageHandler()", imgPath+" > img.html")
 				return
 			}
 			errorHandler(w, req)
@@ -126,7 +126,7 @@ func uploadHandler(w http.ResponseWriter, req *http.Request) {
 					continue
 				} else {
 					created = false
-					color.Red(err.Error())
+					misc.PrintMessage(1, "http", "reqimg.go", "uploadHandler()", err.Error())
 					return
 				}
 			}
@@ -135,7 +135,7 @@ func uploadHandler(w http.ResponseWriter, req *http.Request) {
 
 		err = imageMkdir(id, strings.Split(fileheader.Filename, ".")[1])
 		if err != nil {
-			color.Red(err.Error())
+			misc.PrintMessage(1, "http", "reqimg.go", "uploadHandler()", err.Error())
 			return
 		}
 
@@ -147,7 +147,7 @@ func uploadHandler(w http.ResponseWriter, req *http.Request) {
 
 		err = db.StoreImage(id, strings.Split(fileheader.Filename, ".")[0], imgPath, strings.Split(fileheader.Filename, ".")[1])
 		if err != nil {
-			color.Red(err.Error())
+			misc.PrintMessage(1, "http", "reqimg.go", "uploadHandler()", err.Error())
 			return
 		}
 
@@ -165,16 +165,16 @@ func uploadHandler(w http.ResponseWriter, req *http.Request) {
 			f, err := os.OpenFile(filePath, os.O_WRONLY|os.O_CREATE, 0666)
 			defer f.Close()
 			if err != nil {
-				color.Red(err.Error())
+				misc.PrintMessage(1, "http", "reqimg.go", "uploadHandler()", err.Error())
 				return
 			}
-			color.Green("INF: File " + filePath + " has been created.")
+			misc.PrintMessage(0, "http", "reqimg.go", "uploadHandler()", "File "+filePath+" has been created.")
 			bytesCopied, err := io.Copy(f, file)
 			if err != nil {
-				color.Red(err.Error())
+				misc.PrintMessage(1, "http", "reqimg.go", "uploadHandler()", err.Error())
 				return
 			}
-			color.Green("INF: Content of uploaded image (" + strconv.FormatInt(bytesCopied, 10) + " Bytes) has been copied to " + filePath + ".")
+			misc.PrintMessage(0, "http", "reqimg.go", "uploadHandler()", "Content of uploaded image ("+strconv.FormatInt(bytesCopied, 10)+" Bytes) has been copied to "+filePath+".")
 		}
 	}
 }
@@ -231,13 +231,13 @@ func imageMkdir(id string, fileExt string) error {
 				// letters used (3) from the filename random hash
 				if _, err := os.Stat(fs.ImgStoragePath + currentPath + id[offset:offset+fs.ImgStorageSubDirNameLength] + "/"); os.IsNotExist(err) {
 					// doesn't exist
-					color.Cyan("INF: ../" + currentPath + id[offset:offset+fs.ImgStorageSubDirNameLength] + "/ created.")
+					misc.PrintMessage(2, "http", "reqimg.go", "imageMkdir()", fs.ImgStoragePath+currentPath+id[offset:offset+fs.ImgStorageSubDirNameLength]+"/ created.")
 					os.Mkdir(fs.ImgStoragePath+currentPath+id[offset:offset+fs.ImgStorageSubDirNameLength]+"/", 0776)
 					currentPath += id[offset:offset+fs.ImgStorageSubDirNameLength] + "/"
 					offset += fs.ImgStorageSubDirNameLength
 				} else {
 					// exists
-					color.Cyan("INF: ../" + currentPath + id[offset:offset+fs.ImgStorageSubDirNameLength] + "/ already existed and thus is not created!")
+					misc.PrintMessage(2, "http", "reqimg.go", "imageMkdir()", fs.ImgStoragePath+currentPath+id[offset:offset+fs.ImgStorageSubDirNameLength]+"/ already existed and thus is not created!")
 					currentPath += id[offset:offset+fs.ImgStorageSubDirNameLength] + "/"
 					offset += fs.ImgStorageSubDirNameLength
 				}
