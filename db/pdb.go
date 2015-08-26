@@ -155,10 +155,10 @@ func InsertNewUser(uname string, pwd string, email string) error {
 	return nil
 }
 
-func CheckIfImageExists(id string) (bool, string, string, error) {
+func CheckIfImageExists(id string) (bool, string, string, string, int, error) {
 	rows, err := db.Query("select image_id, image_title, image_path from imgturtle.img where image_id='" + id + "'")
 	if err != nil {
-		color.Red("ERR@pdb.go@InsertNewUser() => %s", err.Error())
+		color.Red("ERR@pdb.go@InsertNewUser() => %s", 500, err.Error())
 	}
 	var (
 		fid  string
@@ -173,14 +173,14 @@ func CheckIfImageExists(id string) (bool, string, string, error) {
 			if err != nil {
 				color.Red("ERR: pdb.go CheckIfImageExists() => Fetched values could not be scanned.")
 				color.Red(err.Error())
-				return false, "", "", err
+				return false, "", "", "", 500, err
 			}
 		}
 		if fid == id {
-			return true, fpat, ftit, nil
+			return true, fpat, fid, ftit, 200, nil
 		}
 	}
-	return false, "", "", errors.New("No image with id " + id + " could be found.")
+	return false, "", "", "", 404, errors.New("No image with id " + id + " could be found.")
 }
 
 func CheckImageID(id string) error {
