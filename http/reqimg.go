@@ -31,20 +31,56 @@ func imageHandler(w http.ResponseWriter, req *http.Request) {
 		// fetch image ID from url
 		vars := mux.Vars(req)
 		id := vars["id"]
-
 		if len(id) > fs.ImgNameLength {
 			if strings.Contains(id, ".") {
 				id = strings.Split(id, ".")[0]
 			}
-			found, imgPath, title, err := db.CheckIfImageExists(id)
+			found, imgPath, _, _, errc, err := db.CheckIfImageExists(id)
 			if err != nil {
-				color.Red(err.Error())
-				http.Error(w, err.Error(), http.StatusInternalServerError)
+				color.Red("%s %s", errc, err.Error())
+				if errc == 500 {
+					http.Error(w, err.Error(), http.StatusInternalServerError)
+					return
+				} else if errc == 404 {
+					errorHandler(w, req)
+					return
+				}
+			}
+			if found == true {
+				fp := path.Join(fs.ImgStoragePath, imgPath)
+				http.ServeFile(w, req, fp)
 				return
 			}
+			http.Error(w, errors.New("Image with ID "+id+" could not be found.").Error(), http.StatusNotFound)
+			return
+		}
+		http.Error(w, errors.New(id+" is not a valid ID.").Error(), http.StatusNotFound)
+		return
+	}
+}
 
+func imagePageHandler(w http.ResponseWriter, req *http.Request) {
+	if req.Method == "GET" {
+		// fetch image ID from url
+		vars := mux.Vars(req)
+		id := vars["id"]
+		if len(id) > fs.ImgNameLength {
+			if strings.Contains(id, ".") {
+				id = strings.Split(id, ".")[0]
+			}
+			found, imgPath, imgID, title, errc, err := db.CheckIfImageExists(id)
+			if err != nil {
+				color.Red("%s %s", errc, err.Error())
+				if errc == 500 {
+					http.Error(w, err.Error(), http.StatusInternalServerError)
+					return
+				} else if errc == 404 {
+					errorHandler(w, req)
+					return
+				}
+			}
 			if found == true {
-				img := Img{title, "./imgstorage/" + imgPath}
+				img := Img{title, "/img/" + imgID}
 				fp := path.Join("public", "img.html")
 				tmpl, err := template.ParseFiles(fp)
 				if err != nil {
@@ -61,10 +97,10 @@ func imageHandler(w http.ResponseWriter, req *http.Request) {
 				color.Green("INF: serving static file => %s with image %s", "img.html", imgPath)
 				return
 			}
-			http.Error(w, errors.New("Image with ID "+id+" could not be found.").Error(), http.StatusNotFound)
+			errorHandler(w, req)
 			return
 		}
-		http.Error(w, errors.New(id+" is not a valid ID.").Error(), http.StatusNotFound)
+		errorHandler(w, req)
 		return
 	}
 }
@@ -115,7 +151,8 @@ func uploadHandler(w http.ResponseWriter, req *http.Request) {
 			return
 		}
 
-		fmt.Fprintf(w, "Your image was successfully uploaded! Find it at /img/%s", id)
+		http.Redirect(w, req, "/"+id, http.StatusFound)
+		//fmt.Fprintf(w, "Your image was successfully uploaded! Find it at /img/%s", id)
 		//http.Redirect(w, req, "/me", 200) <-- doesn't work
 
 		if id != "" {
@@ -222,4 +259,9 @@ func imageMkdir(id string, fileExt string) error {
 		}
 	}
 	return errors.New("Something went wrong. (findAvailableName)")
+}
+
+func favIcoHandler(w http.ResponseWriter, req *http.Request) {
+	fp := path.Join("public/img/", "favicon.ico")
+	http.ServeFile(w, req, fp)
 }
