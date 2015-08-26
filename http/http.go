@@ -35,20 +35,23 @@ func Start() {
 
 	r.HandleFunc("/signup", signUpHandler)
 
-	// images
-	r.HandleFunc("/img/{id}", imageHandler)
-
 	// file upload
 	r.HandleFunc("/upload", uploadHandler)
 
 	// errors
 	r.HandleFunc("/error", errorHandler)
 
+	r.HandleFunc("/favicon.ico", favIcoHandler)
+
+	// images
+	r.HandleFunc("/img/{id}", imageHandler)
+	r.HandleFunc("/{id}", imagePageHandler)
+
 	// initialise negroni
 	// include middleware, logger, etc.
 	n := negroni.New(
 		negroni.NewRecovery(),
-		negroni.HandlerFunc(MiddleWare),
+		//negroni.HandlerFunc(MiddleWare),
 		//negroni.NewLogger(),
 		negroni.NewStatic(http.Dir("public")),
 	)

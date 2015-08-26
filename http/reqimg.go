@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"imgturtle/db"
 	"imgturtle/fs"
+	"imgturtle/misc"
 	"io"
 	"net/http"
 	"os"
@@ -14,7 +15,6 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/fatih/color"
 	"github.com/gorilla/mux"
 )
 
@@ -31,47 +31,76 @@ func imageHandler(w http.ResponseWriter, req *http.Request) {
 		// fetch image ID from url
 		vars := mux.Vars(req)
 		id := vars["id"]
-
 		if len(id) > fs.ImgNameLength {
 			if strings.Contains(id, ".") {
 				id = strings.Split(id, ".")[0]
 			}
-			found, title, ext, err := db.CheckIfImageExists(id)
+			found, imgPath, _, _, errc, err := db.CheckIfImageExists(id)
 			if err != nil {
-				color.Red(err.Error())
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				return
+				misc.PrintMessage(1, "http", "reqimg.go", "imageHandler()", (string(errc) + " " + err.Error()))
+				if errc == 500 {
+					http.Error(w, err.Error(), http.StatusInternalServerError)
+					return
+				} else if errc == 404 {
+					errorHandler(w, req)
+					return
+				}
 			}
-
-			resourcePath := "./imgstorage/" +
-				id[0:fs.ImgStorageSubDirNameLength] + "/" +
-				id[fs.ImgStorageSubDirNameLength:fs.ImgStorageSubDirNameLength*2] + "/" +
-				id[fs.ImgStorageSubDirNameLength*2:fs.ImgStorageSubDirNameLength*3] + "/" +
-				id[fs.ImgStorageSubDirNameLength*3:fs.ImgStorageSubDirNameLength*4] + "/" +
-				id[((fs.ImgStorageSubDirNameLength*4)+1):len(id)] + "." + ext
-
 			if found == true {
-				img := Img{title, resourcePath}
-				fp := path.Join("public", "img.html")
-				tmpl, err := template.ParseFiles(fp)
-				if err != nil {
-					color.Red("ERR: 500. Couldn't parse template.")
-					http.Error(w, err.Error(), http.StatusInternalServerError)
-					return
-				}
-				// return (execute) the template or print an error if one occurs
-				if err := tmpl.Execute(w, img); err != nil {
-					color.Red("ERR: 500. Couldn't return template.")
-					http.Error(w, err.Error(), http.StatusInternalServerError)
-					return
-				}
-				color.Green("INF: serving static file => %s with image %s", "img.html", resourcePath)
+				fp := path.Join(fs.ImgStoragePath, imgPath)
+				http.ServeFile(w, req, fp)
 				return
 			}
 			http.Error(w, errors.New("Image with ID "+id+" could not be found.").Error(), http.StatusNotFound)
 			return
 		}
 		http.Error(w, errors.New(id+" is not a valid ID.").Error(), http.StatusNotFound)
+		return
+	}
+}
+
+func imagePageHandler(w http.ResponseWriter, req *http.Request) {
+	if req.Method == "GET" {
+		// fetch image ID from url
+		vars := mux.Vars(req)
+		id := vars["id"]
+		if len(id) > fs.ImgNameLength {
+			if strings.Contains(id, ".") {
+				id = strings.Split(id, ".")[0]
+			}
+			found, imgPath, imgID, title, errc, err := db.CheckIfImageExists(id)
+			if err != nil {
+				misc.PrintMessage(1, "http", "reqimg.go", "imagePageHandler()", string(errc)+err.Error())
+				if errc == 500 {
+					http.Error(w, err.Error(), http.StatusInternalServerError)
+					return
+				} else if errc == 404 {
+					errorHandler(w, req)
+					return
+				}
+			}
+			if found == true {
+				img := Img{title, "/img/" + imgID}
+				fp := path.Join("public", "img.html")
+				tmpl, err := template.ParseFiles(fp)
+				if err != nil {
+					misc.PrintMessage(1, "http", "reqimg.go", "imagePageHandler()", "500. Couldn't parse template.")
+					http.Error(w, err.Error(), http.StatusInternalServerError)
+					return
+				}
+				// return (execute) the template or print an error if one occurs
+				if err := tmpl.Execute(w, img); err != nil {
+					misc.PrintMessage(1, "http", "reqimg.go", "imagePageHandler()", "500. Couldn't return template.")
+					http.Error(w, err.Error(), http.StatusInternalServerError)
+					return
+				}
+				misc.PrintMessage(0, "http", "reqimg.go", "imagePageHandler()", imgPath+" > img.html")
+				return
+			}
+			errorHandler(w, req)
+			return
+		}
+		errorHandler(w, req)
 		return
 	}
 }
@@ -97,7 +126,7 @@ func uploadHandler(w http.ResponseWriter, req *http.Request) {
 					continue
 				} else {
 					created = false
-					color.Red(err.Error())
+					misc.PrintMessage(1, "http", "reqimg.go", "uploadHandler()", err.Error())
 					return
 				}
 			}
@@ -106,17 +135,23 @@ func uploadHandler(w http.ResponseWriter, req *http.Request) {
 
 		err = imageMkdir(id, strings.Split(fileheader.Filename, ".")[1])
 		if err != nil {
-			color.Red(err.Error())
-			return
-		}
-		err = db.StoreImage(id, strings.Split(fileheader.Filename, ".")[0], strings.Split(fileheader.Filename, ".")[1])
-		if err != nil {
-			color.Red(err.Error())
+			misc.PrintMessage(1, "http", "reqimg.go", "uploadHandler()", err.Error())
 			return
 		}
 
-		fmt.Fprintf(w, "Your image was successfully uploaded! Find it at /img/%s", id)
-		//http.Redirect(w, req, "/me", 200) <-- doesn't work
+		imgPath := id[0:fs.ImgStorageSubDirNameLength] + "/" +
+			id[fs.ImgStorageSubDirNameLength:fs.ImgStorageSubDirNameLength*2] + "/" +
+			id[fs.ImgStorageSubDirNameLength*2:fs.ImgStorageSubDirNameLength*3] + "/" +
+			id[fs.ImgStorageSubDirNameLength*3:fs.ImgStorageSubDirNameLength*4] + "/" +
+			id[((fs.ImgStorageSubDirNameLength*4)+1):len(id)] + "." + strings.Split(fileheader.Filename, ".")[1]
+
+		err = db.StoreImage(id, strings.Split(fileheader.Filename, ".")[0], imgPath, strings.Split(fileheader.Filename, ".")[1])
+		if err != nil {
+			misc.PrintMessage(1, "http", "reqimg.go", "uploadHandler()", err.Error())
+			return
+		}
+
+		http.Redirect(w, req, "/"+id, http.StatusFound)
 
 		if id != "" {
 			filePath := fs.ImgStoragePath +
@@ -130,16 +165,16 @@ func uploadHandler(w http.ResponseWriter, req *http.Request) {
 			f, err := os.OpenFile(filePath, os.O_WRONLY|os.O_CREATE, 0666)
 			defer f.Close()
 			if err != nil {
-				color.Red(err.Error())
+				misc.PrintMessage(1, "http", "reqimg.go", "uploadHandler()", err.Error())
 				return
 			}
-			color.Green("INF: File " + filePath + " has been created.")
+			misc.PrintMessage(0, "http", "reqimg.go", "uploadHandler()", "File "+filePath+" has been created.")
 			bytesCopied, err := io.Copy(f, file)
 			if err != nil {
-				color.Red(err.Error())
+				misc.PrintMessage(1, "http", "reqimg.go", "uploadHandler()", err.Error())
 				return
 			}
-			color.Green("INF: Content of uploaded image (" + strconv.FormatInt(bytesCopied, 10) + " Bytes) has been copied to " + filePath + ".")
+			misc.PrintMessage(0, "http", "reqimg.go", "uploadHandler()", "Content of uploaded image ("+strconv.FormatInt(bytesCopied, 10)+" Bytes) has been copied to "+filePath+".")
 		}
 	}
 }
@@ -196,13 +231,13 @@ func imageMkdir(id string, fileExt string) error {
 				// letters used (3) from the filename random hash
 				if _, err := os.Stat(fs.ImgStoragePath + currentPath + id[offset:offset+fs.ImgStorageSubDirNameLength] + "/"); os.IsNotExist(err) {
 					// doesn't exist
-					color.Cyan("INF: ../" + currentPath + id[offset:offset+fs.ImgStorageSubDirNameLength] + "/ created.")
+					misc.PrintMessage(2, "http", "reqimg.go", "imageMkdir()", fs.ImgStoragePath+currentPath+id[offset:offset+fs.ImgStorageSubDirNameLength]+"/ created.")
 					os.Mkdir(fs.ImgStoragePath+currentPath+id[offset:offset+fs.ImgStorageSubDirNameLength]+"/", 0776)
 					currentPath += id[offset:offset+fs.ImgStorageSubDirNameLength] + "/"
 					offset += fs.ImgStorageSubDirNameLength
 				} else {
 					// exists
-					color.Cyan("INF: ../" + currentPath + id[offset:offset+fs.ImgStorageSubDirNameLength] + "/ already existed and thus is not created!")
+					misc.PrintMessage(2, "http", "reqimg.go", "imageMkdir()", fs.ImgStoragePath+currentPath+id[offset:offset+fs.ImgStorageSubDirNameLength]+"/ already existed and thus is not created!")
 					currentPath += id[offset:offset+fs.ImgStorageSubDirNameLength] + "/"
 					offset += fs.ImgStorageSubDirNameLength
 				}
@@ -222,4 +257,9 @@ func imageMkdir(id string, fileExt string) error {
 		}
 	}
 	return errors.New("Something went wrong. (findAvailableName)")
+}
+
+func favIcoHandler(w http.ResponseWriter, req *http.Request) {
+	fp := path.Join("public/img/", "favicon.ico")
+	http.ServeFile(w, req, fp)
 }
