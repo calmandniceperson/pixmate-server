@@ -24,7 +24,7 @@ type Page struct {
 }
 
 func errorHandler(w http.ResponseWriter, req *http.Request) {
-	color.Red("INF: request for %s. 404, not found.\nINF: serving static file => %s", req.URL.Path, "error.html")
+	color.Red("http: 404, %s not found.\nhttp: serving file => %s", req.URL.Path, "error.html")
 	http.ServeFile(w, req, "public/error.html")
 }
 
