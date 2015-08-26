@@ -13,6 +13,15 @@ body {
   /*color: #000;*/
 }
 
+.home_link {
+  text-decoration: none;
+  color: #fff;
+}
+
+.home_link:focus {
+  outline: none;
+}
+
 /*
  * CONTENT BLOCk
  */
