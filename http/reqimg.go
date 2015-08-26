@@ -152,8 +152,6 @@ func uploadHandler(w http.ResponseWriter, req *http.Request) {
 		}
 
 		http.Redirect(w, req, "/"+id, http.StatusFound)
-		//fmt.Fprintf(w, "Your image was successfully uploaded! Find it at /img/%s", id)
-		//http.Redirect(w, req, "/me", 200) <-- doesn't work
 
 		if id != "" {
 			filePath := fs.ImgStoragePath +
