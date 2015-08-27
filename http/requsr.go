@@ -126,7 +126,6 @@ func signUpHandler(w http.ResponseWriter, req *http.Request) {
 			misc.PrintMessage(1, "http", "requsr.go", "signUpHandler()", err.Error())
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		} else {
-			//http.Redirect(w, req, "/", 200)
 			http.StatusText(200)
 		}
 	}
