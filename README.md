@@ -6,7 +6,7 @@ Imgturtle (stylized: imgturtle) is an image sharing service in development.
     - A PostgreSQL database
     - Go installed on your computer
 
-# How do I run it
+# How do I run it?
     - Start PostgreSQL database
     - Run either the shell script (run.sh) or just "go build" main.go yourself
   You can also provide environment variables, such as:
