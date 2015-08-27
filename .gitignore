@@ -1,5 +1,5 @@
 priv_run.sh
 
-public/img/imgstorage/
-
 main
+
+db/db_priv.sql
