@@ -16,8 +16,6 @@ import (
 )
 
 func main() {
-	db.Start()
-
 	if runtime.GOOS == "windows" {
 		cmd := exec.Command("cls")
 		cmd.Stdout = os.Stdout
@@ -27,10 +25,9 @@ func main() {
 		cmd.Stdout = os.Stdout
 		cmd.Run()
 	}
-
+	db.Start()
 	// Check if the image storage exists before using it
 	// if it doesn't, this function will create it
 	fs.Start()
-
 	http.Start()
 }

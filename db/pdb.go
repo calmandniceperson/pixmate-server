@@ -46,7 +46,6 @@ func Start() {
 		pw = os.Getenv("DB_PW")
 		name = os.Getenv("DB_NAME")
 	}
-
 	var err error
 	db, err = sql.Open("postgres",
 		"user="+uname+
@@ -58,12 +57,11 @@ func Start() {
 		misc.PrintMessage(1, "db  ", "pdb.go", "Start()", "PostgreSQL config could not be established\n."+err.Error())
 		return
 	}
-
 	// test connection
 	err = db.Ping()
 	if err != nil { // connection not successful
 		misc.PrintMessage(1, "db  ", "pdb.go", "Start()", "Database connection not working.\n"+err.Error())
-		return
+		os.Exit(-1)
 	}
 }
 
