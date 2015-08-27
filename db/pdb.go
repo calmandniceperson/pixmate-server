@@ -146,7 +146,7 @@ func InsertNewUser(uname string, pwd string, email string) error {
 	if err != nil {
 		return err
 	}
-
+	misc.PrintMessage(0, "db  ", "pdb.go", "InsertNewUser()", "New user "+uname+" with email "+email+" has been created and stored in the database.")
 	return nil
 }
 
