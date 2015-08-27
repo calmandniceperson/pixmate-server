@@ -20,6 +20,14 @@ var db *sql.DB
 // Start is the database package launch method
 // it enters or fetches the data required for the database
 func Start() {
+	var rundb string
+	reader := bufio.NewReader(os.Stdin)
+	color.Cyan("Do you want to run the database module? (y/n) ")
+	rundb, _ = reader.ReadString('\n')
+	if rundb != "y\n" && rundb != "Y\n" {
+		return
+	}
+
 	/*
 	 * allow user to enter db data
 	 * used instead of environment variables
