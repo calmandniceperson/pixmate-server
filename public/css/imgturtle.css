@@ -89,7 +89,7 @@ img {
   position: absolute;
 }
 .flip .card.flipped {
-  -webkit-transform: rotatey(-180deg);
+  -webkit-transform: rotatey(180deg);
 }
 .flip .card {
   width: 100%;
@@ -116,7 +116,7 @@ img {
   cursor: pointer;
 }
 .flip .card .back {
-  -webkit-transform: rotatey(-180deg);
+  -webkit-transform: rotatey(180deg);
   background: blue;
   background: white;
   color: white;
