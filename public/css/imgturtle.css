@@ -1,0 +1,124 @@
+html {
+  font-size: 62.5%;
+}
+html * {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+body {
+  font-size: 1.6rem;
+  font-family: "Open Sans", sans-serif;
+  color: #173d50;
+  background-color: #173d50;
+}
+a {
+  color: #fff;
+  text-decoration: none;
+}
+img {
+  width: 50%;
+  height: 50%;
+  margin-top: 10%;
+}
+#feed-container {
+  width: 80%;
+  height: 100%;
+}
+#me-container {
+  width: 80%;
+  height: 100
+}
+
+.tab-switcher {
+  text-align: center;
+}
+.tab-switcher .fieldset {
+  display: inline-block;
+  position: relative;
+  padding: 2px;
+  border-radius: 50em;
+  border: 1px solid #225b78;
+}
+.tab-switcher input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+}
+.tab-switcher label {
+  position: relative;
+  z-index: 1;
+  display: inline-block;
+  float: left;
+  width: 90px;
+  height: 40px;
+  line-height: 40px;
+  cursor: pointer;
+  font-size: 1.4rem;
+  color: #FFFFFF;
+}
+.tab-switcher .cd-switch {
+  /* floating background */
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  height: 40px;
+  width: 90px;
+  background-color: #0c1f28;
+  border-radius: 50em;
+  -webkit-transition: -webkit-transform 0.5s;
+  -moz-transition: -moz-transform 0.5s;
+  transition: transform 0.5s;
+}
+.tab-switcher input[type="radio"]:checked + label + .cd-switch,
+.tab-switcher input[type="radio"]:checked + label:nth-of-type(n) + .cd-switch {
+  /* use label:nth-of-type(n) to fix a bug on safari with multiple adjacent-sibling selectors*/
+  -webkit-transform: translateX(90px);
+  -moz-transform: translateX(90px);
+  -ms-transform: translateX(90px);
+  -o-transform: translateX(90px);
+  transform: translateX(90px);
+}
+
+.no-js .tab-switcher {
+  display: none;
+}
+
+.flip {
+  -webkit-perspective: 800;
+  width: 98.5%;
+  height: 100%;
+  position: absolute;
+}
+.flip .card.flipped {
+  -webkit-transform: rotatey(-180deg);
+}
+.flip .card {
+  width: 100%;
+  height: 100%;
+  -webkit-transform-style: preserve-3d;
+  -webkit-transition: 0.5s;
+}
+.flip .card .face {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  -webkit-backface-visibility: hidden;
+  z-index: 2;
+  font-family: Georgia;
+  font-size: 3em;
+  text-align: center;
+  line-height: 200px;
+}
+.flip .card .front {
+  position: absolute;
+  z-index: 1;
+  background: white;
+  color: white;
+  cursor: pointer;
+}
+.flip .card .back {
+  -webkit-transform: rotatey(-180deg);
+  background: blue;
+  background: white;
+  color: white;
+  cursor: pointer;
+}
