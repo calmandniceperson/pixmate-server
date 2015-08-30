@@ -26,39 +26,6 @@ type Img struct {
 	ImgFilePath string
 }
 
-func imageHandler(w http.ResponseWriter, req *http.Request) {
-	if req.Method == "GET" {
-		// fetch image ID from url
-		vars := mux.Vars(req)
-		id := vars["id"]
-		if len(id) > fs.ImgNameLength {
-			if strings.Contains(id, ".") {
-				id = strings.Split(id, ".")[0]
-			}
-			found, imgPath, _, _, errc, err := db.CheckIfImageExists(id)
-			if err != nil {
-				misc.PrintMessage(1, "http", "reqimg.go", "imageHandler()", (string(errc) + " " + err.Error()))
-				if errc == 500 {
-					http.Error(w, err.Error(), http.StatusInternalServerError)
-					return
-				} else if errc == 404 {
-					errorHandler(w, req)
-					return
-				}
-			}
-			if found == true {
-				fp := path.Join(fs.ImgStoragePath, imgPath)
-				http.ServeFile(w, req, fp)
-				return
-			}
-			http.Error(w, errors.New("Image with ID "+id+" could not be found.").Error(), http.StatusNotFound)
-			return
-		}
-		http.Error(w, errors.New(id+" is not a valid ID.").Error(), http.StatusNotFound)
-		return
-	}
-}
-
 func imagePageHandler(w http.ResponseWriter, req *http.Request) {
 	if req.Method == "GET" {
 		// fetch image ID from url
@@ -101,6 +68,39 @@ func imagePageHandler(w http.ResponseWriter, req *http.Request) {
 			return
 		}
 		errorHandler(w, req)
+		return
+	}
+}
+
+func imageHandler(w http.ResponseWriter, req *http.Request) {
+	if req.Method == "GET" {
+		// fetch image ID from url
+		vars := mux.Vars(req)
+		id := vars["id"]
+		if len(id) > fs.ImgNameLength {
+			if strings.Contains(id, ".") {
+				id = strings.Split(id, ".")[0]
+			}
+			found, imgPath, _, _, errc, err := db.CheckIfImageExists(id)
+			if err != nil {
+				misc.PrintMessage(1, "http", "reqimg.go", "imageHandler()", (string(errc) + " " + err.Error()))
+				if errc == 500 {
+					http.Error(w, err.Error(), http.StatusInternalServerError)
+					return
+				} else if errc == 404 {
+					errorHandler(w, req)
+					return
+				}
+			}
+			if found == true {
+				fp := path.Join(fs.ImgStoragePath, imgPath)
+				http.ServeFile(w, req, fp)
+				return
+			}
+			http.Error(w, errors.New("Image with ID "+id+" could not be found.").Error(), http.StatusNotFound)
+			return
+		}
+		http.Error(w, errors.New(id+" is not a valid ID.").Error(), http.StatusNotFound)
 		return
 	}
 }
