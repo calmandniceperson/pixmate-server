@@ -1,46 +1,66 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>imgturtle</title>
-    <link href="../css/imgturtle.css" rel="stylesheet" type="text/css">
-    <link href="../comp/bootstrap/bootstrap.min.js" type="text/css">
-  </head>
-  <body>
-    <div class="content-container">
-      <div class="tab-switcher">
-        <p class="fieldset">
-          <input checked id="feed-link" name="duration-1" type="radio" value="feed">
-          <label for="feed-link">Feed</label>
-          <input id="me-link" name="duration-1" type="radio" value="me">
-          <label for="me-link">Me</label>
-          <span class="cd-switch"></span>
-        </p>
-      </div>
-      <div class="flip">
-        <div class="card">
-          <div class="face front">
-            <div class="container">
-              <div class="row">
-                <div class="col-*-*">
-                  <img src="../img/diet.gif"/>
-                </div>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>imgturtle</title>
+  <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="../comp/mdl/material.min.css">
+  <script src="../comp/mdl/material.min.js"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link href="../css/imgturtle.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+  <div class="content-container">
+    <div class="tab-switcher">
+      <p class="fieldset">
+        <input checked id="feed-link" name="duration-1" type="radio" value="feed">
+        <label for="feed-link">Feed</label>
+        <input id="me-link" name="duration-1" type="radio" value="me">
+        <label for="me-link">Me</label>
+        <span class="cd-switch"></span>
+      </p>
+    </div>
+    <div class="flip">
+      <div class="flipdiv">
+        <div class="face front">
+          <center>
+            <div class="img-card mdl-card mdl-card mdl-shadow--4dp">
+              <a href="../img/paris.png">
+                <img src="../img/paris.png" />
+              </a>
+              <div class="mdl-card__title">
+                <h2 class="mdl-card__title-text">paris.png</h2>
               </div>
-              <div class="row">
-                <div class="col-*-*"></div>
-                <div class="col-*-*"></div>
-                <div class="col-*-*"></div>
-              </div>
-              <div class="row">
-                ...
+              <div class="mdl-card__menu">
+                <button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect">
+                  <i class="material-icons">share</i>
+                </button>
               </div>
             </div>
-          </div>
-          <div class="face back">
-            <img src="../img/paris.png"/>
-          </div>
+            <div class="img-card mdl-card mdl-card mdl-shadow--4dp">
+              <a href="../img/snowyroad.jpg">
+                <img src="../img/snowyroad.jpg" />
+              </a>
+              <div class="mdl-card__title">
+                <h2 class="mdl-card__title-text">snowyroad.jpg</h2>
+              </div>
+              <div class="mdl-card__menu">
+                <button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect">
+                  <i class="material-icons">share</i>
+                </button>
+              </div>
+            </div>
+          </center>
+        </div>
+        <div class="face back">
+          <img src="../img/paris.png" />
         </div>
       </div>
     </div>
-    <script src="../js/imgturtle.js"></script>
-  </body>
+  </div>
+  <script src="../js/imgturtle.js"></script>
+</body>
+
 </html>

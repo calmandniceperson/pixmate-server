@@ -6,30 +6,18 @@ html * {
   -moz-osx-font-smoothing: grayscale;
 }
 body {
-  font-size: 1.6rem;
-  font-family: "Open Sans", sans-serif;
   color: #173d50;
   background-color: #173d50;
+}
+.content-container {
+  font-family: 'Roboto', sans-serif;
 }
 a {
   color: #fff;
   text-decoration: none;
 }
-img {
-  width: 30%;
-  height: 30%;
-  margin-top: 10%;
-}
-#feed-container {
-  width: 80%;
-  height: 100%;
-}
-#me-container {
-  width: 80%;
-  height: 100%;
-}
-
 .tab-switcher {
+  padding-top: 5px;
   text-align: center;
 }
 .tab-switcher .fieldset {
@@ -68,8 +56,7 @@ img {
   -moz-transition: -moz-transform 0.5s;
   transition: transform 0.5s;
 }
-.tab-switcher input[type="radio"]:checked + label + .cd-switch,
-.tab-switcher input[type="radio"]:checked + label:nth-of-type(n) + .cd-switch {
+.tab-switcher input[type="radio"]:checked + label + .cd-switch, .tab-switcher input[type="radio"]:checked + label:nth-of-type(n) + .cd-switch {
   /* use label:nth-of-type(n) to fix a bug on safari with multiple adjacent-sibling selectors*/
   -webkit-transform: translateX(90px);
   -moz-transform: translateX(90px);
@@ -77,11 +64,9 @@ img {
   -o-transform: translateX(90px);
   transform: translateX(90px);
 }
-
 .no-js .tab-switcher {
   display: none;
 }
-
 .flip {
   -webkit-perspective: 800;
   -moz-perspective: 800;
@@ -89,11 +74,11 @@ img {
   height: 100%;
   position: absolute;
 }
-.flip .card.flipped {
+.flip .flipdiv.flipped {
   -webkit-transform: rotatey(180deg);
   -moz-transform: rotatey(180deg);
 }
-.flip .card {
+.flip .flipdiv {
   width: 100%;
   height: 100%;
   -webkit-transform-style: preserve-3d;
@@ -101,30 +86,37 @@ img {
   -webkit-transition: 0.5s;
   -moz-transition: 0.5s;
 }
-.flip .card .face {
+.flip .flipdiv .face {
+  overflow: auto;
   width: 100%;
   height: 100%;
   position: absolute;
   -webkit-backface-visibility: hidden;
   -moz-backface-visibility: hidden;
   z-index: 2;
-  font-family: Georgia;
-  font-size: 3em;
   text-align: center;
   line-height: 200px;
 }
-.flip .card .front {
-  position: absolute;
+.flip .flipdiv .front {
   z-index: 1;
   background: white;
   color: white;
   cursor: pointer;
 }
-.flip .card .back {
+.flip .flipdiv .back {
   -webkit-transform: rotatey(180deg);
   -moz-transform: rotatey(180deg);
   background: blue;
   background: white;
   color: white;
   cursor: pointer;
+}
+.img-card {
+  width: 40%;
+  height: 20%;
+  margin: 2%;
+}
+.img-card img {
+  max-width: 100%;
+  max-height: 100%;
 }
