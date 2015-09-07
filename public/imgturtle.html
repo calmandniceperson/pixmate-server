@@ -1,66 +1,89 @@
 <!DOCTYPE html>
 <html>
 
-<head>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>imgturtle</title>
-  <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
-  <link rel="stylesheet" href="../comp/mdl/material.min.css">
-  <script src="../comp/mdl/material.min.js"></script>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-  <link href="../css/imgturtle.css" rel="stylesheet" type="text/css">
-</head>
+  <head>
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <title>imgturtle</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" type="text/css">
+<!-- Latest compiled and minified CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../css/imgturtle.css" rel="stylesheet" type="text/css">
+  </head>
 
-<body>
-  <div class="content-container">
-    <div class="tab-switcher">
-      <p class="fieldset">
-        <input checked id="feed-link" name="duration-1" type="radio" value="feed">
-        <label for="feed-link">Feed</label>
-        <input id="me-link" name="duration-1" type="radio" value="me">
-        <label for="me-link">Me</label>
-        <span class="cd-switch"></span>
-      </p>
+  <body>
+    <nav class="navbar navbar-static-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button aria-controls="navbar" aria-espanded="false" class="navbar-toggle collapesed" data-target="#navbar" data-toggle="collapse">&#9776;</button>
+          <a href="index.html">
+            <h1>imgturtle</h1>
+          </a>
+        </div>
+        <div class="navbar-collapse collapse" id="navbar">
+          <ul class="nav navbar-nav navbar-right">
+<!--LIs-->
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <div class="switch">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-4 col-md-offset-4">
+            <div class="tab-switcher">
+              <p class="fieldset">
+                <input checked id="feed-link" name="duration-1" type="radio" value="feed">
+                <label for="feed-link">Feed</label>
+                <input id="me-link" name="duration-1" type="radio" value="me">
+                <label for="me-link">Me</label>
+                <span class="cd-switch"></span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
     <div class="flip">
       <div class="flipdiv">
         <div class="face front">
-          <center>
-            <div class="img-card mdl-card mdl-card mdl-shadow--4dp">
-              <a href="../img/paris.png">
-                <img src="../img/paris.png" />
-              </a>
-              <div class="mdl-card__title">
-                <h2 class="mdl-card__title-text">paris.png</h2>
+          <div class="img-container">
+            <div class="container">
+              <div class="row">
+                <div class="col-md-8 col-md-offset-2">
+                  <div class="img-card">
+                    <img href="../img/diet.gif" src="../img/diet.gif"/>
+                    <h3 class="img-title">diet.gif</h3>
+                  </div>
+                </div>
               </div>
-              <div class="mdl-card__menu">
-                <button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect">
-                  <i class="material-icons">share</i>
-                </button>
-              </div>
-            </div>
-            <div class="img-card mdl-card mdl-card mdl-shadow--4dp">
-              <a href="../img/snowyroad.jpg">
-                <img src="../img/snowyroad.jpg" />
-              </a>
-              <div class="mdl-card__title">
-                <h2 class="mdl-card__title-text">snowyroad.jpg</h2>
-              </div>
-              <div class="mdl-card__menu">
-                <button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect">
-                  <i class="material-icons">share</i>
-                </button>
+              <div class="row">
+                <div class="col-md-8 col-md-offset-2">
+                  <div class="img-card">
+                    <img href="../img/snowyroad.jpg" src="../img/snowyroad.jpg"/>
+                    <h3 class="img-title">snowyroad.jpg</h3>
+                  </div>
+                </div>
               </div>
             </div>
-          </center>
+          </div>
         </div>
         <div class="face back">
-          <img src="../img/paris.png" />
+          <div class="img-container">
+            <div class="container">
+              <div class="row">
+                <div class="col-md-8 col-md-offset-2">
+                  <div class="img-card">
+                    <img href="../img/diet.gif" src="../img/paris.png"/>
+                    <h3 class="img-title">diet.gif</h3>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-  <script src="../js/imgturtle.js"></script>
-</body>
+    <script src="../js/imgturtle.js"></script>
+  </body>
 
 </html>

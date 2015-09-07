@@ -1,3 +1,4 @@
+document.getElementById("feed-link").focus();
 document.getElementById("me-link").addEventListener("click", function(){
   document.getElementById("feed-link").classList.remove("selected");
   document.getElementById("me-link").classList.add("selected");
