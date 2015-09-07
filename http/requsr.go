@@ -9,7 +9,10 @@ import (
 	"text/template"
 
 	"github.com/gorilla/mux"
+	"github.com/gorilla/sessions"
 )
+
+var store = sessions.NewCookieStore([]byte(cookieKey))
 
 // User struct stores user data
 // to fill into the user's profile page
@@ -86,10 +89,21 @@ func signInHandler(w http.ResponseWriter, req *http.Request) {
 		if err != nil {
 			misc.PrintMessage(1, "http", "requsr.go", "signInHandler()", "Error decoding signup JSON\n"+err.Error())
 		}
-		valid, err := db.CheckUserCredentials(s.Ue, s.Pwd)
+		valid, uid, err := db.CheckUserCredentials(s.Ue, s.Pwd)
 		if valid {
-			//http.Redirect(w, req, "/", 200)
+			// Get a session. We're ignoring the error resulted from decoding an
+			// existing session: Get() always returns a session, even if empty.
+			session, err := store.Get(req, "imgturtle")
+			// Set some session values.
+			session.Values["uid"] = uid
+			session.Values["uname"] = s.Ue
+			// Save it before we write to the response/return from the handler.
+			session.Save(req, w)
 			http.StatusText(200)
+			if err != nil {
+				http.Error(w, err.Error(), 500)
+				return
+			}
 		} else {
 			if err != nil {
 				misc.PrintMessage(1, "http", "requsr.go", "signInHandler()", err.Error())

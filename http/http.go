@@ -7,16 +7,27 @@
 package http
 
 import (
+	"bufio"
 	"net/http"
+	"os"
 
 	"github.com/codegangsta/negroni"
 	"github.com/fatih/color"
 	"github.com/gorilla/mux"
 )
 
+var cookieKey string
+
 // Start is the http packages launch method
 // It creates all the routes, adds negroni logging and starts the server
 func Start() {
+	if os.Getenv("COOKIE_KEY") == "" {
+		reader := bufio.NewReader(os.Stdin)
+		color.Cyan("Enter db user name: ")
+		cookieKey, _ = reader.ReadString('\n')
+	} else {
+		cookieKey = os.Getenv("COOKIE_KEY")
+	}
 	color.Cyan("http: Starting HTTP/HTTPS server...")
 	r := mux.NewRouter().StrictSlash(true)
 	r.NotFoundHandler = http.HandlerFunc(errorHandler)
