@@ -30,7 +30,7 @@ func errorHandler(w http.ResponseWriter, req *http.Request) {
 func mainPageHandler(w http.ResponseWriter, req *http.Request) {
 	if req.Method == "GET" {
 		pdata := Page{false}
-		fp /*file path*/ := path.Join("public", "welcome.html")
+		fp /*file path*/ := path.Join("public", "imgturtle.html")
 		// parse img.html as template
 		tmpl, err := template.ParseFiles(fp)
 		if err != nil {

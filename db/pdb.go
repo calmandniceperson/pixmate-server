@@ -61,7 +61,13 @@ func Start() {
 	err = db.Ping()
 	if err != nil { // connection not successful
 		misc.PrintMessage(1, "db  ", "pdb.go", "Start()", "Database connection not working.\n"+err.Error())
-		os.Exit(-1)
+		var rundb string
+		reader := bufio.NewReader(os.Stdin)
+		color.Cyan("Do you want to run the server without a working database module? (y/n) ")
+		rundb, _ = reader.ReadString('\n')
+		if rundb != "y\n" && rundb != "Y\n" {
+			os.Exit(-1)
+		}
 	}
 }
 

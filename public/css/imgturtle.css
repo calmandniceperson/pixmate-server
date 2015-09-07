@@ -1,0 +1,116 @@
+body {
+  font-family: 'Roboto', sans-serif;
+}
+.tab-switcher {
+  padding-top: 5px;
+  text-align: center;
+}
+.tab-switcher .fieldset {
+  display: inline-block;
+  position: relative;
+  padding-right: 2px;
+  border-radius: 50em;
+  border: 1px solid #000;
+}
+.tab-switcher input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+}
+.tab-switcher label {
+  position: relative;
+  z-index: 1;
+  display: inline-block;
+  float: left;
+  width: 90px;
+  height: 40px;
+  line-height: 40px;
+  cursor: pointer;
+  font-size: 1.4rem;
+  color: #000;
+}
+input:focus + label {
+    color:white;
+}
+.tab-switcher .cd-switch {
+  /* floating background */
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  height: 40px;
+  width: 90px;
+  background-color: #0c1f28;
+  border-radius: 50em;
+  -webkit-transition: -webkit-transform 0.5s;
+  -moz-transition: -moz-transform 0.5s;
+  transition: transform 0.5s;
+}
+.tab-switcher input[type="radio"]:checked + label + .cd-switch, .tab-switcher input[type="radio"]:checked + label:nth-of-type(n) + .cd-switch {
+  /* use label:nth-of-type(n) to fix a bug on safari with multiple adjacent-sibling selectors*/
+  -webkit-transform: translateX(90px);
+  -moz-transform: translateX(90px);
+  -ms-transform: translateX(90px);
+  -o-transform: translateX(90px);
+  transform: translateX(90px);
+}
+.no-js .tab-switcher {
+  display: none;
+}
+.img-container .img-title {
+  padding-bottom: 5px;
+}
+.img-container .img-card {
+  padding-left: 15px;
+  padding-right: 15px;
+  -moz-box-shadow: 3px 3px 5px grey;
+  -webkit-box-shadow: 3px 3px 5px grey;
+  box-shadow: 3px 3px 5px grey;
+}
+.img-container .col-md-8 {}
+.img-container img {
+  padding-top: 15px;
+  width: 100%;
+  max-height: 500px;
+}
+.img-container .row {
+  margin-bottom: 50px;
+}
+.flip {
+  -webkit-perspective: 800;
+  -moz-perspective: 800;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+}
+.flip .flipdiv.flipped {
+  -webkit-transform: rotatey(180deg);
+  -moz-transform: rotatey(180deg);
+}
+.flip .flipdiv {
+  width: 100%;
+  height: 100%;
+  -webkit-transform-style: preserve-3d;
+  -moz-transform-style: preserve-3d;
+  -webkit-transition: 0.5s;
+  -moz-transition: 0.5s;
+}
+.flip .flipdiv .face {
+  overflow: auto;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  -webkit-backface-visibility: hidden;
+  -moz-backface-visibility: hidden;
+  z-index: 2;
+  line-height: 200px;
+}
+.flip .flipdiv .front {
+  z-index: 1;
+  background: white;
+  cursor: pointer;
+}
+.flip .flipdiv .back {
+  -webkit-transform: rotatey(180deg);
+  -moz-transform: rotatey(180deg);
+  background: white;
+  cursor: pointer;
+}
