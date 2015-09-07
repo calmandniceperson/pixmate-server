@@ -73,39 +73,40 @@ func Start() {
 
 // CheckUserCredentials handles the database part of the
 // login process
-func CheckUserCredentials(ue string, pwd string) (bool, error) {
-	rows, err := db.Query("select user_name, user_email, user_pw, user_hash from imgturtle.user where user_name='" + ue + "' or user_email='" + ue + "'")
+func CheckUserCredentials(ue string, pwd string) (bool, string, error) {
+	rows, err := db.Query("select user_id, user_name, user_email, user_pw, user_hash from imgturtle.user where user_name='" + ue + "' or user_email='" + ue + "'")
 	if err != nil {
 		misc.PrintMessage(1, "db  ", "pdb.go", "CheckUserCredentials()", err.Error())
-		return false, err
+		return false, "", err
 	}
 
 	if rows != nil {
 		defer rows.Close()
 
 		var (
+			fID    string
 			fUname string
 			fEmail string
 			fPw    string
 			fHash  string
 		)
 		if rows.Next() {
-			err := rows.Scan(&fUname, &fEmail, &fPw, &fHash)
+			err := rows.Scan(&fID, &fUname, &fEmail, &fPw, &fHash)
 			if err != nil {
 				misc.PrintMessage(1, "db  ", "pdb.go", "CheckUserCredentials()", "Fetched values could not be scanned.\n"+err.Error())
-				return false, err
+				return false, "", err
 			}
 			if fPw == string(pbkdf2.Key([]byte(pwd), []byte(fHash), 4096, 32, sha1.New)) {
 				misc.PrintMessage(0, "db  ", "pdb.go", "CheckUserCredentials()", "User "+fUname+" entered a valid password.")
-				return true, nil
+				return true, fID, nil
 			}
 			misc.PrintMessage(1, "db  ", "pdb.go", "CheckUserCredentials()", "User "+fUname+" entered an invalid password.")
-			return false, errors.New("Incorrect password.")
+			return false, "", errors.New("Incorrect password.")
 		}
 		misc.PrintMessage(0, "db  ", "pdb.go", "CheckUserCredentials()", "User "+ue+" could not be found.")
-		return false, errors.New("No such user.")
+		return false, "", errors.New("No such user.")
 	}
-	return false, nil
+	return false, "", nil
 }
 
 // InsertNewUser handles the database part of the process of
@@ -162,21 +163,21 @@ func CheckIfImageExists(id string) (bool, string, string, string, int, error) {
 		misc.PrintMessage(1, "db  ", "pdb.go", "CheckIfImageExists()", string(500)+err.Error())
 	}
 	var (
-		fid  string
+		fID  string
 		ftit string
 		fpat string
 	)
 	if rows != nil {
 		defer rows.Close()
 		for rows.Next() {
-			err := rows.Scan(&fid, &ftit, &fpat)
+			err := rows.Scan(&fID, &ftit, &fpat)
 			if err != nil {
 				misc.PrintMessage(1, "db  ", "pdb.go", "CheckIfImageExists()", "Fetched values could not be scanned.\n"+err.Error())
 				return false, "", "", "", 500, err
 			}
 		}
-		if fid == id {
-			return true, fpat, fid, ftit, 200, nil
+		if fID == id {
+			return true, fpat, fID, ftit, 200, nil
 		}
 	}
 	return false, "", "", "", 404, errors.New("No image with id " + id + " could be found.")
@@ -191,14 +192,14 @@ func CheckImageID(id string) error {
 	if rows != nil {
 		defer rows.Close()
 
-		var fid string
+		var fID string
 		for rows.Next() {
-			err := rows.Scan(&fid)
+			err := rows.Scan(&fID)
 			if err != nil {
 				misc.PrintMessage(1, "db  ", "pdb.go", "CheckImageID()", "Fetched values could not be scanned.\n"+err.Error())
 				return err
 			}
-			if fid == id {
+			if fID == id {
 				return errors.New("Image ID '" + id + "' in use.")
 			}
 		}
