@@ -2,13 +2,101 @@
 <html lang="en-US">
 
 <head>
-  <title>
-    imgturtle
-  </title>
+  <meta content="width=device-width, initial-scale=1" name="viewport">
+  <title>imgturtle // {{.User.Uname}}</title>
+  <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" type="text/css">
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .user-content {
+      padding-top: 50px;
+    }
+
+    .ppic-card img {
+      padding: 5px;
+      width: 100px;
+      height: 100px;
+      -moz-box-shadow: 3px 3px 5px grey;
+      -webkit-box-shadow: 3px 3px 5px grey;
+      box-shadow: 3px 3px 5px grey;
+    }
+
+    h1,
+    p {
+      font-family: 'Roboto', sans-serif;
+    }
+
+    .user-data-field {
+      margin-top: 15px;
+    }
+
+    .error-container {
+      margin-top: 15%;
+    }
+  </style>
 </head>
 
 <body>
-  <p>{{.Uname}} profile</p>
+  <nav class="navbar navbar-static-top">
+    <div class="container">
+      <div class="navbar-header">
+        <button aria-controls="navbar" aria-espanded="false" class="navbar-toggle collapesed" data-target="navbar" data-toggle="collapse">&#9776;</button>
+        <a class="home-link" href="/">
+          <h1 class="home-link__text">imgturtle</h1>
+        </a>
+      </div>
+      <div class="navbar-collapse collapse" id="navbar">
+        <ul class="nav navbar-nav navbar-right">
+          {{if .IsLoggedIn}} {{if .IsFollowable}}
+          <li class="active">
+            <button type="button" class="btn btn-default">Follow</button>
+          </li>
+          {{end}} {{end}}
+          {{if .IsLoggedIn}}
+          <li>
+            <a href="/logout">Log out</a>
+          </li>
+          {{end}}
+        </ul>
+      </div>
+    </div>
+  </nav>
+  {{if .IsLoggedIn}}
+  <div class="user-content">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-4 col-md-offset-4">
+          <center>
+            <div class="ppic-card">
+              <img href="../img/paris.png" src="../img/paris.png" />
+            </div>
+          </center>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-6 col-sm-offset-3">
+          <center>
+            <div class="user-data-field">
+              <div class="well">
+                <p>Username: {{.User.Uname}}</p>
+                <p>Date joined:</p>
+              </div>
+            </div>
+          </center>
+        </div>
+      </div>
+    </div>
+  </div>
+  {{else}}
+  <div class="error-container">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-8 col-md-offset-3">
+          <h1>Sorry, you are not logged in!</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  {{end}}
 </body>
 
 </html>

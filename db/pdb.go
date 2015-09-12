@@ -73,40 +73,39 @@ func Start() {
 
 // CheckUserCredentials handles the database part of the
 // login process
-func CheckUserCredentials(ue string, pwd string) (bool, string, error) {
-	rows, err := db.Query("select user_id, user_name, user_email, user_pw, user_hash from imgturtle.user where user_name='" + ue + "' or user_email='" + ue + "'")
+func CheckUserCredentials(ue string, pwd string) (bool, error) {
+	rows, err := db.Query("select user_name, user_email, user_pw, user_hash from imgturtle.user where user_name='" + ue + "' or user_email='" + ue + "'")
 	if err != nil {
 		misc.PrintMessage(1, "db  ", "pdb.go", "CheckUserCredentials()", err.Error())
-		return false, "", err
+		return false, err
 	}
 
 	if rows != nil {
 		defer rows.Close()
 
 		var (
-			fID    string
 			fUname string
 			fEmail string
 			fPw    string
 			fHash  string
 		)
 		if rows.Next() {
-			err := rows.Scan(&fID, &fUname, &fEmail, &fPw, &fHash)
+			err := rows.Scan(&fUname, &fEmail, &fPw, &fHash)
 			if err != nil {
 				misc.PrintMessage(1, "db  ", "pdb.go", "CheckUserCredentials()", "Fetched values could not be scanned.\n"+err.Error())
-				return false, "", err
+				return false, err
 			}
 			if fPw == string(pbkdf2.Key([]byte(pwd), []byte(fHash), 4096, 32, sha1.New)) {
 				misc.PrintMessage(0, "db  ", "pdb.go", "CheckUserCredentials()", "User "+fUname+" entered a valid password.")
-				return true, fID, nil
+				return true, nil
 			}
 			misc.PrintMessage(1, "db  ", "pdb.go", "CheckUserCredentials()", "User "+fUname+" entered an invalid password.")
-			return false, "", errors.New("Incorrect password.")
+			return false, errors.New("Incorrect password.")
 		}
 		misc.PrintMessage(0, "db  ", "pdb.go", "CheckUserCredentials()", "User "+ue+" could not be found.")
-		return false, "", errors.New("No such user.")
+		return false, errors.New("No such user.")
 	}
-	return false, "", nil
+	return false, nil
 }
 
 // InsertNewUser handles the database part of the process of

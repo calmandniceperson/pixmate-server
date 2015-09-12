@@ -46,6 +46,8 @@ func Start() {
 
 	r.HandleFunc("/signup", signUpHandler)
 
+	r.HandleFunc("/logout", logoutHandler)
+
 	// file upload
 	r.HandleFunc("/upload", uploadHandler)
 

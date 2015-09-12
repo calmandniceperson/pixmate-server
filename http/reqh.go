@@ -15,10 +15,10 @@ func MiddleWare(rw http.ResponseWriter, r *http.Request, next http.HandlerFunc) 
 	}
 }
 
-// Page contains
+// MainPageData contains
 // the data that is inserted
-// into the welcome page template
-type Page struct {
+// into the main page template
+type MainPageData struct {
 	IsLoggedIn bool
 }
 
@@ -29,9 +29,13 @@ func errorHandler(w http.ResponseWriter, req *http.Request) {
 
 func mainPageHandler(w http.ResponseWriter, req *http.Request) {
 	if req.Method == "GET" {
-		pdata := Page{false}
-		fp /*file path*/ := path.Join("public", "imgturtle.html")
-		// parse img.html as template
+		var mdata MainPageData
+		if _, err := getUserCookieData(req); err == nil {
+			mdata.IsLoggedIn = true
+		} else {
+			mdata.IsLoggedIn = false
+		}
+		fp := path.Join("public", "imgturtle.html")
 		tmpl, err := template.ParseFiles(fp)
 		if err != nil {
 			misc.PrintMessage(1, "http", "reqh.go", "mainPageHandler()", "Couldn't parse template\n"+err.Error())
@@ -39,7 +43,7 @@ func mainPageHandler(w http.ResponseWriter, req *http.Request) {
 			return
 		}
 		// return (execute) the template or print an error if one occurs
-		if err := tmpl.Execute(w, pdata); err != nil {
+		if err := tmpl.Execute(w, mdata); err != nil {
 			misc.PrintMessage(1, "http", "reqh.go", "mainPageHandler()", "Couldn't return template\n"+err.Error())
 			http.Error(w, "500 internal server error", http.StatusInternalServerError)
 		} else {

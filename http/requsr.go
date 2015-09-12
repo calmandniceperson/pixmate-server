@@ -9,10 +9,13 @@ import (
 	"text/template"
 
 	"github.com/gorilla/mux"
-	"github.com/gorilla/sessions"
+	"github.com/gorilla/securecookie"
 )
 
-var store = sessions.NewCookieStore([]byte(cookieKey))
+var cookieHandler = securecookie.New(
+	securecookie.GenerateRandomKey(64),
+	securecookie.GenerateRandomKey(32),
+)
 
 // User struct stores user data
 // to fill into the user's profile page
@@ -20,23 +23,33 @@ type User struct {
 	Uname string
 }
 
+// UPageData stores data for the people
+// page
+type UPageData struct {
+	IsLoggedIn   bool
+	IsFollowable bool
+	User         User
+}
+
 func mePageHandler(w http.ResponseWriter, req *http.Request) {
 	if req.Method == "GET" {
-		user := User{"Your "}
-
+		var udata UPageData
+		if uName, err := getUserCookieData(req); err == nil {
+			udata.IsLoggedIn = true
+			udata.User.Uname = uName
+		} else {
+			udata.IsLoggedIn = false
+		}
+		udata.IsFollowable = false
 		fp := path.Join("public", "people.html")
-
-		// form template
 		tmpl, err := template.ParseFiles(fp)
-
 		if err != nil {
 			misc.PrintMessage(1, "http", "requsr.go", "mePageHandler()", "500. Couldn't parse template.\n"+err.Error())
 			http.Error(w, "500 internal server error", http.StatusInternalServerError)
 			return
 		}
-
 		// return the template or print an error if one occurs
-		if err := tmpl.Execute(w, user); err != nil {
+		if err := tmpl.Execute(w, udata); err != nil {
 			misc.PrintMessage(1, "http", "requsr.go", "mePageHandler()", "500. Couldn't return template.\n"+err.Error())
 			http.Error(w, "500 internal server error", http.StatusInternalServerError)
 		} else {
@@ -71,14 +84,14 @@ func peoplePageHandler(w http.ResponseWriter, req *http.Request) {
 	}
 }
 
+// SignInData holds all the sign-in related
+// data during the signin process
 type SignInData struct {
 	Ue  string
 	Pwd string
 }
 
 func signInHandler(w http.ResponseWriter, req *http.Request) {
-	// If the request is a GET request
-	// return the signin/signup page
 	if req.Method == "GET" {
 		misc.PrintMessage(2, "http", "requsr.go", "signInHandler()", "serving file signin.html")
 		http.ServeFile(w, req, "public/signin.html")
@@ -89,16 +102,9 @@ func signInHandler(w http.ResponseWriter, req *http.Request) {
 		if err != nil {
 			misc.PrintMessage(1, "http", "requsr.go", "signInHandler()", "Error decoding signup JSON\n"+err.Error())
 		}
-		valid, uid, err := db.CheckUserCredentials(s.Ue, s.Pwd)
+		valid, err := db.CheckUserCredentials(s.Ue, s.Pwd)
 		if valid {
-			// Get a session. We're ignoring the error resulted from decoding an
-			// existing session: Get() always returns a session, even if empty.
-			session, err := store.Get(req, "imgturtle")
-			// Set some session values.
-			session.Values["uid"] = uid
-			session.Values["uname"] = s.Ue
-			// Save it before we write to the response/return from the handler.
-			session.Save(req, w)
+			setUserCookie(s.Ue, w)
 			http.StatusText(200)
 			if err != nil {
 				http.Error(w, err.Error(), 500)
@@ -143,4 +149,9 @@ func signUpHandler(w http.ResponseWriter, req *http.Request) {
 			http.StatusText(200)
 		}
 	}
+}
+
+func logoutHandler(w http.ResponseWriter, req *http.Request) {
+	clearUserCookie(w)
+	http.Redirect(w, req, "/", 200)
 }
