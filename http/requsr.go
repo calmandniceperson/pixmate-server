@@ -9,12 +9,6 @@ import (
 	"text/template"
 
 	"github.com/gorilla/mux"
-	"github.com/gorilla/securecookie"
-)
-
-var cookieHandler = securecookie.New(
-	securecookie.GenerateRandomKey(64),
-	securecookie.GenerateRandomKey(32),
 )
 
 // User struct stores user data

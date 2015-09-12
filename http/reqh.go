@@ -47,7 +47,7 @@ func mainPageHandler(w http.ResponseWriter, req *http.Request) {
 			misc.PrintMessage(1, "http", "reqh.go", "mainPageHandler()", "Couldn't return template\n"+err.Error())
 			http.Error(w, "500 internal server error", http.StatusInternalServerError)
 		} else {
-			misc.PrintMessage(0, "http", "reqh.go", "mainPageHandler()", "serving file welcome.html")
+			misc.PrintMessage(2, "http", "reqh.go", "mainPageHandler()", "serving file welcome.html")
 		}
 	}
 }
