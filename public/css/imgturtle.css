@@ -1,6 +1,9 @@
 body {
   font-family: 'Roboto', sans-serif;
 }
+.home-link:hover {
+  text-decoration: none;
+}
 .tab-switcher {
   padding-top: 5px;
   text-align: center;
@@ -29,7 +32,7 @@ body {
   color: #000;
 }
 input:focus + label {
-    color:white;
+  color: #fff;
 }
 .tab-switcher .cd-switch {
   /* floating background */
