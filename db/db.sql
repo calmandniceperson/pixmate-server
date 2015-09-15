@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS imgturtle.User (
     user_hash text not null,
     user_p_pic_path text,
     date_joined timestamp default now(),
+    private int default 1,
     PRIMARY KEY(user_name)
 );
 
