@@ -23,7 +23,7 @@ var cookieKey string
 func Start() {
 	if os.Getenv("COOKIE_KEY") == "" {
 		reader := bufio.NewReader(os.Stdin)
-		color.Cyan("Enter db user name: ")
+		color.Cyan("Enter cookie name: ")
 		cookieKey, _ = reader.ReadString('\n')
 	} else {
 		cookieKey = os.Getenv("COOKIE_KEY")
