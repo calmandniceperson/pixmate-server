@@ -182,7 +182,7 @@ func CheckIfImageExists(id string) (bool, string, string, string, int, error) {
 	return false, "", "", "", 404, errors.New("No image with id " + id + " could be found.")
 }
 
-func CheckImageID(id string) error {
+func CheckIfImageIDInUse(id string) error {
 	rows, err := db.Query("select image_id from imgturtle.img where image_id='" + id + "'")
 	if err != nil {
 		misc.PrintMessage(1, "db  ", "pdb.go", "CheckImageID()", err.Error())

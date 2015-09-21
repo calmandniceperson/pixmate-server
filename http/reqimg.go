@@ -119,7 +119,7 @@ func uploadHandler(w http.ResponseWriter, req *http.Request) {
 		created := false
 		for created != true {
 			id = generateImageID()
-			err = db.CheckImageID(id)
+			err = db.CheckIfImageIDInUse(id)
 			if err != nil {
 				if err.Error() == "Image ID '"+id+"' exists." {
 					created = false
