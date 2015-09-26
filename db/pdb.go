@@ -156,10 +156,44 @@ func InsertNewUser(uname string, pwd string, email string) error {
 	return nil
 }
 
+func CheckIfUserExists(name string) (bool, error) {
+	rows, err := db.Query("select 1 from imgturtle.User where user_name='" + name + "'")
+	if err != nil {
+		misc.PrintMessage(1, "db  ", "pdb.go", "CheckIfUserExists()", "500 "+err.Error())
+		return false, err
+	}
+	defer rows.Close()
+	var num int
+	if rows == nil {
+		return false, nil
+	} else {
+		for rows.Next() {
+			err := rows.Scan(&num)
+			if err != nil {
+				return false, err
+			}
+			return true, nil
+		}
+	}
+	return false, nil
+}
+
+func CreateFollowerRelationShip(initiatiorName string, receiverName string) error {
+	stmt, err := db.Prepare("INSERT INTO imgturtle.Following(user1_name, user2_name) VALUES($1, $2)")
+	if err != nil {
+		return err
+	}
+	_, err = stmt.Exec(initiatiorName, receiverName)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func CheckIfImageExists(id string) (bool, string, string, string, int, error) {
 	rows, err := db.Query("select image_id, image_title, image_path from imgturtle.img where image_id='" + id + "'")
 	if err != nil {
-		misc.PrintMessage(1, "db  ", "pdb.go", "CheckIfImageExists()", string(500)+err.Error())
+		misc.PrintMessage(1, "db  ", "pdb.go", "CheckIfImageExists()", "500 "+err.Error())
 	}
 	var (
 		fID  string

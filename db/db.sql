@@ -9,15 +9,15 @@ CREATE TABLE IF NOT EXISTS imgturtle.User (
     user_hash text not null,
     user_p_pic_path text,
     date_joined timestamp default now(),
-    private int default 1,
+    private int default 1, /* 0=public, 1=friends*/
     PRIMARY KEY(user_name)
 );
 
 CREATE TABLE IF NOT EXISTS imgturtle.Following (
-  id serial PRIMARY KEY,
   user1_name text not null,
   user2_name text not null,
-  status int not null default 1,
+  status int not null default 1, /* 1=not yet accepted, 0=accepted*/
+  PRIMARY KEY(user1_name, user2_name),
   FOREIGN KEY (user1_name) REFERENCES imgturtle.User(user_name),
   FOREIGN KEY (user2_name) REFERENCES imgturtle.User(user_name)
 );

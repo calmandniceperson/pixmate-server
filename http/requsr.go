@@ -47,7 +47,7 @@ func mePageHandler(w http.ResponseWriter, req *http.Request) {
 			misc.PrintMessage(1, "http", "requsr.go", "mePageHandler()", "500. Couldn't return template.\n"+err.Error())
 			http.Error(w, "500 internal server error", http.StatusInternalServerError)
 		} else {
-			misc.PrintMessage(2, "http", "requsr.go", "mePageHandler()", "serving file people.html(me)")
+			misc.PrintMessage(2, "http", "requsr.go", "mePageHandler()", "serving file people.html => /me")
 		}
 	}
 }
@@ -58,8 +58,33 @@ func peoplePageHandler(w http.ResponseWriter, req *http.Request) {
 		vars := mux.Vars(req)
 		// get name
 		name := vars["name"]
+		// check if the user even exists
+		exists, err := db.CheckIfUserExists(name)
+		if err != nil {
+			misc.PrintMessage(1, "http", "requsr.go", "peoplePageHandler()", "500. Couldn't check if user exists.")
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		if !exists {
+			misc.PrintMessage(1, "http", "requsr.go", "peoplePageHandler()", "500. User "+name+" doesn't exist.")
+			http.Redirect(w, req, "/error", http.StatusFound)
+			return
+		}
 		// insert name into User object
-		user := User{name + "'s "}
+		var user UPageData
+		if uName, err := getUserCookieData(req); err == nil {
+			user.IsLoggedIn = true
+			// check if user is on their own profile
+			if uName == name {
+				user.IsFollowable = false
+			} else {
+				user.IsFollowable = true
+			}
+		} else {
+			user.IsLoggedIn = false
+			user.IsFollowable = true
+		}
+		user.User.Uname = name
 		fp := path.Join("public", "people.html")
 		// form template
 		tmpl, err := template.ParseFiles(fp)
@@ -73,7 +98,35 @@ func peoplePageHandler(w http.ResponseWriter, req *http.Request) {
 			misc.PrintMessage(1, "http", "requsr.go", "peoplePageHandler()", "500. Couldn't return template.")
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		} else {
-			misc.PrintMessage(2, "http", "requsr.go", "peoplePageHandler()", "serving file people.html")
+			misc.PrintMessage(2, "http", "requsr.go", "peoplePageHandler()", "serving file people.html => /u/"+name)
+		}
+	}
+}
+
+func followHandler(w http.ResponseWriter, req *http.Request) {
+	if req.Method == "GET" {
+		// get variables (name in people/{name}) from request
+		vars := mux.Vars(req)
+		// get name
+		name := vars["name"]
+		http.Redirect(w, req, "/u/"+name, http.StatusFound)
+		if uName, err := getUserCookieData(req); err == nil {
+			// create new user relationship with
+			// the user who made the request and the
+			// user with the given id
+			exists, err := db.CheckIfUserExists(name)
+			if err != nil {
+				misc.PrintMessage(1, "http", "requsr.go", "followHandler()", "500. Couldn't check if user exists.")
+			}
+			if exists {
+				err := db.CreateFollowerRelationShip(uName, name)
+				if err != nil {
+					misc.PrintMessage(1, "http", "requsr.go", "followHandler()", "500. Couldn't create follower relationship.")
+				}
+			}
+		} else {
+			misc.PrintMessage(1, "http", "requsr.go", "followHandler()", "500. User was not logged in and thus cannot follow.")
+			http.Redirect(w, req, "/error", http.StatusFound)
 		}
 	}
 }
@@ -99,9 +152,9 @@ func signInHandler(w http.ResponseWriter, req *http.Request) {
 		valid, err := db.CheckUserCredentials(s.Ue, s.Pwd)
 		if valid {
 			setUserCookie(s.Ue, w)
-			http.StatusText(200)
+			http.StatusText(http.StatusOK)
 			if err != nil {
-				http.Error(w, err.Error(), 500)
+				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
 		} else {
@@ -140,12 +193,12 @@ func signUpHandler(w http.ResponseWriter, req *http.Request) {
 			misc.PrintMessage(1, "http", "requsr.go", "signUpHandler()", err.Error())
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		} else {
-			http.StatusText(200)
+			http.StatusText(http.StatusOK)
 		}
 	}
 }
 
 func logoutHandler(w http.ResponseWriter, req *http.Request) {
 	clearUserCookie(w)
-	http.Redirect(w, req, "/", 200)
+	http.Redirect(w, req, "/", http.StatusFound)
 }

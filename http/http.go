@@ -35,17 +35,12 @@ func Start() {
 	// main page
 	r.HandleFunc("/", mainPageHandler)
 
-	// custome profile URL
+	// user related
 	r.HandleFunc("/u/{name}", peoplePageHandler)
-
-	// personal profile url
+	r.HandleFunc("/follow/{name}", followHandler)
 	r.HandleFunc("/me", mePageHandler)
-
-	// Sign in GET & POST
 	r.HandleFunc("/signin", signInHandler)
-
 	r.HandleFunc("/signup", signUpHandler)
-
 	r.HandleFunc("/logout", logoutHandler)
 
 	// file upload

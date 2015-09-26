@@ -38,10 +38,10 @@ func imagePageHandler(w http.ResponseWriter, req *http.Request) {
 			found, imgPath, imgID, title, errc, err := db.CheckIfImageExists(id)
 			if err != nil {
 				misc.PrintMessage(1, "http", "reqimg.go", "imagePageHandler()", string(errc)+err.Error())
-				if errc == 500 {
+				if errc == http.StatusInternalServerError {
 					http.Error(w, err.Error(), http.StatusInternalServerError)
 					return
-				} else if errc == 404 {
+				} else if errc == http.StatusNotFound {
 					errorHandler(w, req)
 					return
 				}
@@ -84,10 +84,10 @@ func imageHandler(w http.ResponseWriter, req *http.Request) {
 			found, imgPath, _, _, errc, err := db.CheckIfImageExists(id)
 			if err != nil {
 				misc.PrintMessage(1, "http", "reqimg.go", "imageHandler()", (string(errc) + " " + err.Error()))
-				if errc == 500 {
+				if errc == http.StatusInternalServerError {
 					http.Error(w, err.Error(), http.StatusInternalServerError)
 					return
-				} else if errc == 404 {
+				} else if errc == http.StatusNotFound {
 					errorHandler(w, req)
 					return
 				}

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en-US">
+<html lang="en-US" ng-app="imgturtleWeb" ng-controller="ProfileCtrl">
 
 <head>
   <meta content="width=device-width, initial-scale=1" name="viewport">
@@ -32,6 +32,10 @@
     .error-container {
       margin-top: 15%;
     }
+
+    .btn-follow {
+      margin-top: 10px;
+    }
   </style>
 </head>
 
@@ -48,10 +52,11 @@
         <ul class="nav navbar-nav navbar-right">
           {{if .IsLoggedIn}} {{if .IsFollowable}}
           <li class="active">
-            <button type="button" class="btn btn-default">Follow</button>
+            <form action="/follow/{{.User.Uname}}">
+              <input type="submit" class="btn btn-default btn-follow" value="Follow">
+            </form>
           </li>
-          {{end}} {{end}}
-          {{if .IsLoggedIn}}
+          {{end}} {{end}} {{if .IsLoggedIn}}
           <li>
             <a href="/logout">Log out</a>
           </li>
@@ -77,8 +82,8 @@
           <center>
             <div class="user-data-field">
               <div class="well">
-                <p>Username: {{.User.Uname}}</p>
-                <p>Date joined:</p>
+                <p class="uinfo_uname">Username: {{.User.Uname}}</p>
+                <p class="uinfo_datej">Date joined:</p>
               </div>
             </div>
           </center>
