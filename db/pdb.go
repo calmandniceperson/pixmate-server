@@ -178,6 +178,28 @@ func CheckIfUserExists(name string) (bool, error) {
 	return false, nil
 }
 
+func CheckIfAlreadyFollowing(initiatorName string, receiverName string) (bool, error) {
+	rows, err := db.Query("select 1 from imgturtle.Following where user1_name='" + initiatorName + "' and user2_name='" + receiverName + "'")
+	if err != nil {
+		misc.PrintMessage(1, "db  ", "pdb.go", "CheckIfAlreadyFollowing()", "500 "+err.Error())
+		return false, err
+	}
+	defer rows.Close()
+	var num int
+	if rows == nil {
+		return false, nil
+	} else {
+		for rows.Next() {
+			err := rows.Scan(&num)
+			if err != nil {
+				return false, err
+			}
+			return true, nil
+		}
+	}
+	return false, nil
+}
+
 func CreateFollowerRelationShip(initiatiorName string, receiverName string) error {
 	stmt, err := db.Prepare("INSERT INTO imgturtle.Following(user1_name, user2_name) VALUES($1, $2)")
 	if err != nil {

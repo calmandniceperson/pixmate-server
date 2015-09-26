@@ -79,10 +79,17 @@ func peoplePageHandler(w http.ResponseWriter, req *http.Request) {
 				user.IsFollowable = false
 			} else {
 				user.IsFollowable = true
+				alreadyFollowing, err := db.CheckIfAlreadyFollowing(uName, name)
+				if err != nil {
+					misc.PrintMessage(1, "http", "requsr.go", "peoplePageHandler()", "500. Could not check if "+uName+" already follows "+name+".")
+				}
+				if alreadyFollowing {
+					user.IsFollowable = false
+				}
 			}
 		} else {
 			user.IsLoggedIn = false
-			user.IsFollowable = true
+			user.IsFollowable = false
 		}
 		user.User.Uname = name
 		fp := path.Join("public", "people.html")
@@ -111,18 +118,26 @@ func followHandler(w http.ResponseWriter, req *http.Request) {
 		name := vars["name"]
 		http.Redirect(w, req, "/u/"+name, http.StatusFound)
 		if uName, err := getUserCookieData(req); err == nil {
-			// create new user relationship with
-			// the user who made the request and the
-			// user with the given id
-			exists, err := db.CheckIfUserExists(name)
+			alreadyFollowing, err := db.CheckIfAlreadyFollowing(uName, name)
 			if err != nil {
-				misc.PrintMessage(1, "http", "requsr.go", "followHandler()", "500. Couldn't check if user exists.")
+				misc.PrintMessage(1, "http", "requsr.go", "followHandler()", "500. Could not check if "+uName+" already follows "+name+".")
 			}
-			if exists {
-				err := db.CreateFollowerRelationShip(uName, name)
+			if !alreadyFollowing {
+				// create new user relationship with
+				// the user who made the request and the
+				// user with the given id
+				exists, err := db.CheckIfUserExists(name)
 				if err != nil {
-					misc.PrintMessage(1, "http", "requsr.go", "followHandler()", "500. Couldn't create follower relationship.")
+					misc.PrintMessage(1, "http", "requsr.go", "followHandler()", "500. Couldn't check if user exists.")
 				}
+				if exists {
+					err := db.CreateFollowerRelationShip(uName, name)
+					if err != nil {
+						misc.PrintMessage(1, "http", "requsr.go", "followHandler()", "500. Couldn't create follower relationship.")
+					}
+				}
+			} else {
+				http.Redirect(w, req, "/u/"+uName, http.StatusFound)
 			}
 		} else {
 			misc.PrintMessage(1, "http", "requsr.go", "followHandler()", "500. User was not logged in and thus cannot follow.")
