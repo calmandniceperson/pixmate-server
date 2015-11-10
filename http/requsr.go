@@ -167,7 +167,7 @@ func signInHandler(w http.ResponseWriter, req *http.Request) {
 		valid, err := db.CheckUserCredentials(s.Ue, s.Pwd)
 		if valid {
 			setUserCookie(s.Ue, w)
-			http.StatusText(http.StatusOK)
+			http.Redirect(w, req, "/me", http.StatusFound)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
