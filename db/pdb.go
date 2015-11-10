@@ -100,10 +100,10 @@ func CheckUserCredentials(ue string, pwd string) (bool, error) {
 				return true, nil
 			}
 			misc.PrintMessage(1, "db  ", "pdb.go", "CheckUserCredentials()", "User "+fUname+" entered an invalid password.")
-			return false, errors.New("Incorrect password.")
+			return false, errors.New("Incorrect username or password.")
 		}
 		misc.PrintMessage(0, "db  ", "pdb.go", "CheckUserCredentials()", "User "+ue+" could not be found.")
-		return false, errors.New("No such user.")
+		return false, errors.New("Incorrect username or password.")
 	}
 	return false, nil
 }
