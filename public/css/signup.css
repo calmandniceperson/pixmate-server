@@ -1,9 +1,0 @@
-body {
-  font-family: 'Roboto', sans-serif;
-}
-#btn_submit {
-  visibility: hidden;
-}
-#errortext {
-  visibility: hidden;
-}

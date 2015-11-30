@@ -9,9 +9,33 @@
   <link href="http://fonts.googleapis.com/css?family=Roboto:400,900" rel="stylesheet" type="text/css">
   <script src="./comp/jquery/jquery.js"></script>
   <script src="./comp/jquery-ui/jquery-ui.min.js"></script>
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+    }
+    h1 {
+      margin-top: 22%;
+      font-size: 70pt;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      -khtml-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+    #container {
+      overflow: hidden;
+      background-repeat: no-repeat;
+    }
+    .fade {
+      opacity: 1;
+      transition: opacity .5s ease-in-out;
+      -moz-transition: opacity .5s ease-in-out;
+      -webkit-transition: opacity .5s ease-in-out;
+    }
+  </style>
   <script>
     var rt = 0;
-
     function errorOnMO() {
       if (rt == 0) {
         document.getElementById("error_text").style.opacity = 0;
@@ -27,7 +51,6 @@
         }, 800);
       }
     }
-
     function errorOnClick() {
       document.getElementById("error_text").style.opacity = 0;
       var cont = document.getElementById("container");
@@ -37,7 +60,6 @@
         cont.style.opacity = 1;
       }, 800);
     }
-
     function kittyOnClick() {
       document.getElementById("kitten_img").style.opacity = 0;
       window.setTimeout(function() {

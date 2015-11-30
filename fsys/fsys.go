@@ -1,8 +1,8 @@
-package fs
+package fsys
 
 import (
 	"bufio"
-	"imgturtle/misc"
+	"imgturtle/io"
 	"os"
 	"strconv"
 
@@ -23,12 +23,6 @@ var ImgStorageSubDirNameLength int
 // Stores the lengths of the images' names
 var ImgNameLength int
 
-// Start will check whether there is already
-// an image storage path in the environment variables.
-// If there is none, the user of this server will be asked
-// to provide a path.
-// This image storage path will be used in http/reqh.go
-// to store images.
 func Start() {
 	if os.Getenv("IMGSTORAGE_LOCATION") != "" {
 		ImgStoragePath = os.Getenv("IMGSTORAGE_LOCATION")
@@ -37,22 +31,13 @@ func Start() {
 		color.Cyan("Enter location of image storage: ")
 		ImgStoragePath, _ = reader.ReadString('\n')
 	}
-	misc.PrintMessage(2, "fs  ", "fs.go", "Start()", "Image storage is being created...")
+	cio.PrintMessage(1, "Image storage is being created...")
 	if _, err := os.Stat(ImgStoragePath); os.IsNotExist(err) {
 		// doesn't exist
 		os.Mkdir(ImgStoragePath, 0776)
-		misc.PrintMessage(2, "fs  ", "fs.go", "Start()", (ImgStoragePath + " created."))
+		cio.PrintMessage(2, (ImgStoragePath + " created."))
 	} else {
-		misc.PrintMessage(2, "fs  ", "fs.go", "Start()", (ImgStoragePath + " already existed."))
-	}
-
-	if os.Getenv("IMGSTORAGE_SUBDIR_LENGTH") != "" {
-		ImgStorageSubDirNameLength, _ = strconv.Atoi(os.Getenv("IMGSTORAGE_SUBDIR_LENGTH"))
-	} else {
-		reader := bufio.NewReader(os.Stdin)
-		color.Cyan("Enter length of subdirectory names: ")
-		temp, _ := reader.ReadString('\n')
-		ImgStorageSubDirNameLength, _ = strconv.Atoi(temp)
+		cio.PrintMessage(2, (ImgStoragePath + " already existed."))
 	}
 
 	if os.Getenv("IMG_NAME_LENGTH") != "" {

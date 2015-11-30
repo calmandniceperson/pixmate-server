@@ -8,7 +8,7 @@ package main
 
 import (
 	"imgturtle/db"
-	"imgturtle/fs"
+	"imgturtle/fsys"
 	"imgturtle/http"
 	"os"
 	"os/exec"
@@ -28,6 +28,6 @@ func main() {
 	db.Start()
 	// Check if the image storage exists before using it
 	// if it doesn't, this function will create it
-	fs.Start()
+	fsys.Start()
 	http.Start()
 }
