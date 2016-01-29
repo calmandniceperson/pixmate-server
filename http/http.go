@@ -23,6 +23,7 @@ func Start() {
 	r.HandleFunc("/favicon.ico", favIcoHandler)
 	r.HandleFunc("/img/{id}", imageHandler)
 	r.HandleFunc("/{id}", imagePageHandler)
+	r.HandleFunc("/api/upload", apiUploadHandler)
 
 	n := negroni.New(
 		negroni.NewRecovery(),

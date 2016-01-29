@@ -68,7 +68,7 @@ func Start() {
 }
 
 func CheckIfImageExists(id string) (bool, string, string, string, int, error) {
-	rows, err := db.Query("SELECT image_id, image_title, image_path FROM imgturtle.img WHERE image_id='" + id + "'")
+	rows, err := db.Query("SELECT image_id, image_title, image_path FROM pixmate.img WHERE image_id='" + id + "'")
 	if err != nil {
 		cio.PrintMessage(1, err.Error())
 	}
@@ -94,7 +94,7 @@ func CheckIfImageExists(id string) (bool, string, string, string, int, error) {
 }
 
 func CheckIfImageIDInUse(id string) error {
-	rows, err := db.Query("SELECT image_id FROM imgturtle.img WHERE image_id='" + id + "'")
+	rows, err := db.Query("SELECT image_id FROM pixmate.img WHERE image_id='" + id + "'")
 	if err != nil {
 		cio.PrintMessage(1, err.Error())
 	}
@@ -117,7 +117,7 @@ func CheckIfImageIDInUse(id string) error {
 
 // StoreImage stores all of an image's information in the database
 func StoreImage(id string, title string, imgPath string, ext string /*, desc string, uploader_id string, uploader_name string*/) error {
-	stmt, err := db.Prepare("INSERT INTO imgturtle.Img(image_id, image_title, image_path, image_f_ext) VALUES($1, $2, $3, $4)")
+	stmt, err := db.Prepare("INSERT INTO pixmate.Img(image_id, image_title, image_path, image_f_ext) VALUES($1, $2, $3, $4)")
 	if err != nil {
 		return err
 	}
