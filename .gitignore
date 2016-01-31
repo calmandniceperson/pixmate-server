@@ -4,6 +4,8 @@ main
 
 db/db_priv.sql
 
+public/comp/*
+
 # -*- mode: gitignore; -*-
 *~
 \#*\#
