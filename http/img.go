@@ -153,4 +153,3 @@ func generateImageID() string {
 	filename := fmt.Sprintf("%x", b)
 	return filename
 }
-
