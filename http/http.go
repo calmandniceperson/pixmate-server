@@ -1,10 +1,10 @@
 package http
 
 import (
+	"imgturtle/io"
 	"net/http"
 
 	"github.com/codegangsta/negroni"
-	"github.com/fatih/color"
 	"github.com/gorilla/mux"
 )
 
@@ -15,7 +15,6 @@ func Start() {
 	/*
 	 *
 	 *  ROUTES
-	 *
 	 */
 	r.HandleFunc("/", mainPageHandler)
 	r.HandleFunc("/upload", uploadHandler)
@@ -27,10 +26,12 @@ func Start() {
 
 	n := negroni.New(
 		negroni.NewRecovery(),
+		negroni.HandlerFunc(MiddleWare),
+		negroni.NewLogger(),
 		negroni.NewStatic(http.Dir("public")),
 	)
 	n.UseHandler(r)
 
-	color.Green("http: Running on port 8000...")
+	cio.PrintMessage(0, "http: Running on port 8000...")
 	http.ListenAndServe(":8000", n)
 }
