@@ -14,6 +14,7 @@ func apiUploadHandler(w http.ResponseWriter, req *http.Request) {
 	if req.Method == "POST" {
 		req.ParseMultipartForm(0)
 		file, fileheader, err := req.FormFile("image")
+		title := req.FormValue("title")
 		if err != nil {
 			cio.PrintMessage(1, err.Error())
 			return
@@ -37,7 +38,7 @@ func apiUploadHandler(w http.ResponseWriter, req *http.Request) {
 			created = true
 		}
 		filePath := fsys.ImgStoragePath + id + "." + strings.Split(fileheader.Filename, ".")[1]
-		err = db.StoreImage(id, strings.Split(fileheader.Filename, ".")[0] /*image name*/, filePath, strings.Split(fileheader.Filename, ".")[1] /*extension*/)
+		err = db.StoreImage(id, title, filePath, strings.Split(fileheader.Filename, ".")[1] /*extension*/)
 		if err != nil {
 			cio.PrintMessage(1, err.Error())
 			return
