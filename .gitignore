@@ -6,6 +6,9 @@ db/db_priv.sql
 
 public/comp/*
 
+http/ssl/cert.pem
+http/ssl/key.pem
+
 # -*- mode: gitignore; -*-
 *~
 \#*\#
