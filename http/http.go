@@ -2,6 +2,7 @@ package http
 
 import (
 	"imgturtle/io"
+	"log"
 	"net/http"
 
 	"github.com/codegangsta/negroni"
@@ -31,6 +32,14 @@ func Start() {
 		negroni.NewStatic(http.Dir("public")),
 	)
 	n.UseHandler(r)
+
+	go func(n http.Handler) {
+		cio.PrintMessage(0, "https: Running on port 8001...")
+		err := http.ListenAndServeTLS(":8001", "http/ssl/cert.pem", "http/ssl/key.pem", n)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}(n)
 
 	cio.PrintMessage(0, "http: Running on port 8000...")
 	http.ListenAndServe(":8000", n)
