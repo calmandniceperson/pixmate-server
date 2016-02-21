@@ -61,7 +61,6 @@ func imagePageHandler(w http.ResponseWriter, req *http.Request) {
 			 * Check whether the view limit has been
 			 * reached.
 			 */
-			print(ttlViews)
 			if ttlViews > -1 {
 				if ttlViews == 0 {
 					http.Redirect(w, req, "/error", 403)
