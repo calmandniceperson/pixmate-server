@@ -30,6 +30,8 @@ CREATE TABLE IF NOT EXISTS pixmate.Img (
   image_f_ext text not null, /* file extension */
   image_desc text,
   date_uploaded timestamp not null default now(),
+  ttl_time int not null,
+  ttl_views int not null,
   uploader_name text,
   FOREIGN KEY (uploader_name) REFERENCES pixmate.User(user_name)
 );
