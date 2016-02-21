@@ -33,7 +33,6 @@ body {
   text-align: center;
 }
 .upload-form {
-  text-align: center;
   color: #fff;
 }
 .upload-form form {
@@ -45,20 +44,26 @@ body {
   border-style: dashed;
   border-color: #fff;
   min-height: 50px;
-  padding-top: 10px;
-  margin-bottom: 2%;
+  height: 150px;
 }
 .upload .submit-button {
   width: 100px;
   height: 35px;
-}
-.upload .form-content {
-  text-align: center;
+  margin-top: 2%;
 }
 .upload .upload-file {
   width: 200px;
-  text-align: center;
   margin-right: 0px;
+  margin-top: 35px;
+}
+.upload .upload-ttl {
+  border-radius: 2px;
+  border-style: none;
+  color: #000;
+  width: 50px;
+}
+.upload .radio {
+  margin-left: 15px;
 }
 .footer {
   position: absolute;
