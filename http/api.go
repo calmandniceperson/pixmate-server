@@ -15,7 +15,7 @@ func apiUploadHandler(w http.ResponseWriter, req *http.Request) {
 		req.ParseMultipartForm(32 << 20)
 
 		/* Retrieve the file */
-		file, fileheader, err := req.FormFile("uploadFile")
+		file, fileheader, err := req.FormFile("image")
 		if err != nil {
 			cio.PrintMessage(1, err.Error())
 			return
@@ -35,11 +35,11 @@ func apiUploadHandler(w http.ResponseWriter, req *http.Request) {
 		} else {
 			title = strings.Split(fileheader.Filename, ".")[0]
 		}
-		ttlTime, err := strconv.ParseInt(req.FormValue("ttlTime"), 10, 64)
+		ttlTime, err := strconv.ParseInt(req.FormValue("ttltime"), 10, 64)
 		if err != nil {
 			cio.PrintMessage(1, err.Error())
 		}
-		ttlViews, err := strconv.ParseInt(req.FormValue("ttlViews"), 10, 64)
+		ttlViews, err := strconv.ParseInt(req.FormValue("ttlviews"), 10, 64)
 		if err != nil {
 			cio.PrintMessage(1, err.Error())
 		}
