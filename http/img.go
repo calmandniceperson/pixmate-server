@@ -211,12 +211,13 @@ func uploadHandler(w http.ResponseWriter, req *http.Request) {
 			ttlTime = 60 * 24 * 7 * 4 * 2 /*2 months (default)*/
 		}
 		if req.FormValue("ttlViews") != "" {
+			/* + 1 at the end to allow an additional view
+       * because the user automatically gets redirected
+       * to the image page when uploading through the website
+       * and therefore uses one view
+       */
 			ttlViews, err = strconv.ParseInt(req.FormValue("ttlViews"), 10, 64)
-			if ttlViews == 0 {
-				// do not allow it to be 0 from the very start
-				// make it unlimited instead
-				ttlViews = -1
-			}
+			ttlViews++;
 			if err != nil {
 				cio.PrintMessage(1, err.Error())
 			}
