@@ -6,6 +6,7 @@ import (
 	"errors"
 	"imgturtle/io"
 	"os"
+	"time"
 
 	"github.com/fatih/color"
 	_ "github.com/lib/pq"
@@ -67,34 +68,69 @@ func Start() {
 	}
 }
 
-func CheckIfImageExists(id string) (bool, string, string, string, int, error) {
-	rows, err := db.Query("SELECT image_id, image_title, image_path FROM imgturtle.img WHERE image_id='" + id + "'")
+func GetImage(id string) (bool, string, string, string, time.Time, int64, int64, int, error) {
+	rows, err := db.Query("SELECT image_id, image_title, image_path, date_uploaded, ttl_time, ttl_views FROM pixmate.img WHERE image_id='" + id + "'")
 	if err != nil {
 		cio.PrintMessage(1, err.Error())
 	}
 	var (
-		fID   string
-		fTit  string
-		fPath string
+		fID      string
+		fTit     string
+		fPath    string
+		tUp      time.Time
+		ttlTime  int64
+		ttlViews int64
 	)
 	if rows != nil {
 		defer rows.Close()
 		for rows.Next() {
-			err := rows.Scan(&fID, &fTit, &fPath)
+			err := rows.Scan(&fID, &fTit, &fPath, &tUp, &ttlTime, &ttlViews)
 			if err != nil {
 				cio.PrintMessage(1, err.Error())
-				return false, "", "", "", 500, err
+				return false, "", "", "", time.Now(), 0, 0, 500, err
 			}
 		}
 		if fID == id {
-			return true, fPath, fID, fTit, 200, nil
+			return true, fPath, fID, fTit, tUp, ttlTime, ttlViews, 200, nil
 		}
 	}
-	return false, "", "", "", 404, errors.New("No image with ID " + id + " could be found.")
+	return false, "", "", "", time.Now(), 0, 0, 404, errors.New("No image with ID " + id + " could be found.")
+}
+
+/* Used to decrease the view count every
+ * time the image is requested
+ */
+func UpdateImageViewCount(id string) error {
+	stmt, err := db.Prepare("UPDATE pixmate.img SET ttl_views=ttl_views-1 WHERE image_id=$1")
+	if err != nil {
+		return err
+	}
+	print("CALLED")
+	_, err = stmt.Exec(id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+/* Delete an image via its ID
+ * Called when the view count or time to live
+ * of an image is exceeded
+ */
+func DeleteImage(id string) error {
+	stmt, err := db.Prepare("DELETE FROM pixmate.img WHERE image_id=$1")
+	if err != nil {
+		return err
+	}
+	_, err = stmt.Exec(id)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func CheckIfImageIDInUse(id string) error {
-	rows, err := db.Query("SELECT image_id FROM imgturtle.img WHERE image_id='" + id + "'")
+	rows, err := db.Query("SELECT image_id FROM pixmate.img WHERE image_id='" + id + "'")
 	if err != nil {
 		cio.PrintMessage(1, err.Error())
 	}
@@ -116,12 +152,21 @@ func CheckIfImageIDInUse(id string) error {
 }
 
 // StoreImage stores all of an image's information in the database
-func StoreImage(id string, title string, imgPath string, ext string /*, desc string, uploader_id string, uploader_name string*/) error {
-	stmt, err := db.Prepare("INSERT INTO imgturtle.Img(image_id, image_title, image_path, image_f_ext) VALUES($1, $2, $3, $4)")
+func StoreImage(id string, title string, imgPath string, ext string, ttlTime int64, ttlViews int64) error {
+	var stmt *sql.Stmt
+	var err error
+	stmt, err = db.Prepare("INSERT INTO pixmate.Img(image_id, image_title, image_path, image_f_ext, ttl_time, ttl_views) VALUES($1, $2, $3, $4, $5, $6)")
 	if err != nil {
 		return err
 	}
-	_, err = stmt.Exec(id, title, imgPath, ext)
+	_, err = stmt.Exec(
+		id,
+		title,
+		imgPath,
+		ext,
+		ttlTime,
+		ttlViews,
+	)
 	if err != nil {
 		return err
 	}

@@ -1,39 +1,64 @@
 <!DOCTYPE html>
-<html lang="en-US">
+
+<html>
 
 <head>
-  <link rel="stylesheet" type="text/css" href="../css/img.css">
-  <link href='http://fonts.googleapis.com/css?family=Roboto:400,900' rel='stylesheet' type='text/css'>
   <title>
-    {{.ImgTitle}} on imgturtle
+    pixmate
   </title>
+  <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="css/img.css">
 </head>
 
 <body>
-  <div class="page-content">
-    <!-- Content -->
-    <div class="content-container">
-      <div class="content content-img">
-        <center>
-          <a href={{.ImgFilePath}}>
-            <img class="content-img__img" src={{.ImgFilePath}} alt={{.ImgTitle}}/>
-          </a>
-        </center>
-        <p class="content-img__title">
-          {{.ImgTitle}}
-        </p>
-      </div>
-      <div class="content content-cmts">
-        <table>
-          <tbody>
-            <tr>
-              <td class="content-cmts__cmt__text mdl-data-table__cell--non-numeric">Comment text...</td>
-              <td class="content-cmts__cmt__uname mdl-data-table__cell--non-numeric">user name</td>
-            </tr>
-          </tbody>
-        </table>
+
+  <div class="navbar">
+    <div class="container-gradient"></div>
+    <center>
+      <p class="navbar-brand-pixmate">pixmate</p>
+    </center>
+  </div>
+  <div class="container">
+    <div class="row">
+      <div class="text-center">
+        <a href={{.ImgFilePath}}>
+          <img class="content-img" src={{.ImgFilePath}} alt={{.ImgTitle}}/>
+        </a>
       </div>
     </div>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-container">
+      <p class="content-img__title">
+        {{.ImgTitle}}
+      </p>
+      <a href="{{.ImgFilePath}}" download="Screenshot.png">
+        <img class="download-button" src="img/download_arrow.svg" />
+      </a>
+    </div>
+    <div class="footer-limiter"></div>
+  </footer>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+  <script>
+    (function(i, s, o, g, r, a, m) {
+      i['GoogleAnalyticsObject'] = r;
+      i[r] = i[r] || function() {
+        (i[r].q = i[r].q || []).push(arguments)
+      }, i[r].l = 1 * new Date();
+      a = s.createElement(o),
+        m = s.getElementsByTagName(o)[0];
+      a.async = 1;
+      a.src = g;
+      m.parentNode.insertBefore(a, m)
+    })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+    ga('create', 'UA-58044730-2', 'auto');
+    ga('send', 'pageview');
+  </script>
 </body>
 
 </html>
