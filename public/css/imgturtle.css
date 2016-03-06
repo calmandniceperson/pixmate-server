@@ -65,6 +65,9 @@ body {
 .upload .radio {
   margin-left: 15px;
 }
+.upload .dl-header {
+  margin-top: 200px;
+}
 .footer {
   position: absolute;
   bottom: 0;
