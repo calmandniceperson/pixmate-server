@@ -163,8 +163,7 @@ func imageHandler(w http.ResponseWriter, req *http.Request) {
 				}
 			}
 			if found == true {
-				fp := path.Join(fsys.ImgStoragePath, imgPath)
-				http.ServeFile(w, req, fp)
+				http.ServeFile(w, req, imgPath)
 				return
 			}
 			http.Error(w, errors.New("Image with ID "+id+" could not be found.").Error(), http.StatusNotFound)
@@ -208,7 +207,7 @@ func uploadHandler(w http.ResponseWriter, req *http.Request) {
 				cio.PrintMessage(1, err.Error())
 			}
 		} else {
-			ttlTime = 60 * 24 * 7 * 4 * 2 /*2 months (default)*/
+			ttlTime = 60 * 24 * 7 /*2 weeks (default)*/
 		}
 		if req.FormValue("ttlViews") != "" {
 			/* + 1 at the end to allow an additional view
