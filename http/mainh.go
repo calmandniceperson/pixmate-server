@@ -14,7 +14,7 @@ func MiddleWare(rw http.ResponseWriter, r *http.Request, next http.HandlerFunc) 
 
 func errorHandler(w http.ResponseWriter, req *http.Request) {
 	cio.PrintMessage(1, req.URL.Path+" not found. Serving error.html")
-	http.Redirect(w, req, "/error", 403)
+	http.Redirect(w, req, "/error", 302)
 }
 
 func mainPageHandler(w http.ResponseWriter, req *http.Request) {
