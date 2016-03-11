@@ -1,0 +1,68 @@
+body {
+  font-family: 'Roboto', sans-serif;
+  margin-bottom: 65px;
+  background: #333333;
+}
+.container-gradient {
+  height: 3px;
+  /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#4a148c+0,f50057+100 */
+  background: #4a148c;
+  /* Old browsers */
+  background: -moz-linear-gradient(left, #4a148c 0%, #f50057 100%);
+  /* FF3.6-15 */
+  background: -webkit-linear-gradient(left, #4a148c 0%, #f50057 100%);
+  /* Chrome10-25,Safari5.1-6 */
+  background: linear-gradient(to right, #4a148c 0%, #f50057 100%);
+  /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+  filter: progid: DXImageTransform.Microsoft.gradient( startColorstr='#4a148c', endColorstr='#f50057', GradientType=1);
+  /* IE6-9 */
+}
+.navbar {
+  margin-bottom: 1%;
+}
+.navbar-brand-pixmate {
+  font-size: 24pt;
+  color: #fff;
+}
+.container {
+  text-align: center;
+}
+.container h1 {
+  margin-top: 60px;
+  color: #fff;
+  text-align: center;
+}
+.container a {
+  color: #fff;
+  text-align: center;
+}
+.pixmate-desc {
+  width: 300px;
+  margin-bottom: 50px;
+}
+.pixmate-desc p {
+  color: #fff;
+  font-size: 14pt;
+}
+.container p {
+  color: #fff;
+}
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  /* Set the fixed height of the footer here */
+  height: 65px;
+  background: #333333;
+}
+.footer p {
+  color: #fff;
+  padding-top: 30px;
+}
+.footer-limiter {
+  height: 5px;
+  background: #404040;
+}
+.footer-container {
+  overflow: hidden;
+}
