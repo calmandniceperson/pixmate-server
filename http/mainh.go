@@ -3,8 +3,8 @@ package http
 import (
 	"imgturtle/io"
 	"net/http"
-	"path"
 	"os"
+	"path"
 )
 
 func MiddleWare(rw http.ResponseWriter, r *http.Request, next http.HandlerFunc) {

@@ -5,9 +5,9 @@ import (
 	"log"
 	"net/http"
 
-	"os"
 	"github.com/codegangsta/negroni"
 	"github.com/gorilla/mux"
+	"os"
 )
 
 func Start() {

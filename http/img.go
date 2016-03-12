@@ -211,12 +211,12 @@ func uploadHandler(w http.ResponseWriter, req *http.Request) {
 		}
 		if req.FormValue("ttlViews") != "" {
 			/* + 1 at the end to allow an additional view
-       * because the user automatically gets redirected
-       * to the image page when uploading through the website
-       * and therefore uses one view
-       */
+			 * because the user automatically gets redirected
+			 * to the image page when uploading through the website
+			 * and therefore uses one view
+			 */
 			ttlViews, err = strconv.ParseInt(req.FormValue("ttlViews"), 10, 64)
-			ttlViews++;
+			ttlViews++
 			if err != nil {
 				cio.PrintMessage(1, err.Error())
 			}
