@@ -4,8 +4,8 @@ import (
 	"bufio"
 	"database/sql"
 	"errors"
-	"imgturtle/io"
 	"os"
+	"pixmate-server/io"
 	"time"
 
 	"github.com/fatih/color"
@@ -155,7 +155,7 @@ func CheckIfImageIDInUse(id string) error {
 func StoreImage(id string, title string, imgPath string, ext string, ttlTime int64, ttlViews int64) error {
 	var stmt *sql.Stmt
 	var err error
-	stmt, err = db.Prepare("INSERT INTO pixmate.Img(image_id, image_title, image_path, image_f_ext, ttl_time, ttl_views) VALUES($1, $2, $3, $4, $5, $6)")
+	stmt, err = db.Prepare("INSERT INTO pixmate.img(image_id, image_title, image_path, image_f_ext, ttl_time, ttl_views) VALUES($1, $2, $3, $4, $5, $6)")
 	if err != nil {
 		return err
 	}
@@ -171,4 +171,16 @@ func StoreImage(id string, title string, imgPath string, ext string, ttlTime int
 		return err
 	}
 	return nil
+}
+
+func CheckImgTTLExceeded(id string) (bool, error) {
+	rows, err := db.Query("SELECT 1 FROM pixmate.img WHERE image_id='" + id + "' AND current_timestamp > date_uploaded + (ttl_time ||' minutes')::interval")
+	if err != nil {
+		cio.PrintMessage(1, err.Error())
+	}
+	if rows.Next() {
+		return true, nil
+	} else {
+		return false, nil
+	}
 }

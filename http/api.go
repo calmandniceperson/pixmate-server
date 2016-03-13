@@ -1,10 +1,10 @@
 package http
 
 import (
-	"imgturtle/db"
-	"imgturtle/fsys"
-	"imgturtle/io"
 	"net/http"
+	"pixmate-server/db"
+	"pixmate-server/fsys"
+	"pixmate-server/io"
 	"strconv"
 	"strings"
 )

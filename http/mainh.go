@@ -1,10 +1,10 @@
 package http
 
 import (
-	"imgturtle/io"
 	"net/http"
 	"os"
 	"path"
+	"pixmate-server/io"
 )
 
 func MiddleWare(rw http.ResponseWriter, r *http.Request, next http.HandlerFunc) {

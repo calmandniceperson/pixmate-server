@@ -4,11 +4,11 @@ import (
 	"crypto/rand"
 	"errors"
 	"fmt"
-	"imgturtle/db"
-	"imgturtle/fsys"
-	"imgturtle/io"
 	"net/http"
 	"path"
+	"pixmate-server/db"
+	"pixmate-server/fsys"
+	"pixmate-server/io"
 	"strconv"
 	"strings"
 	"text/template"
@@ -50,7 +50,13 @@ func imagePageHandler(w http.ResponseWriter, req *http.Request) {
 					http.Redirect(w, req, "/error", 403)
 					err := db.DeleteImage(imgID)
 					if err != nil {
+						return
 						cio.PrintMessage(1, err.Error())
+					}
+					err = fsys.DeleteFile(imgPath)
+					if err != nil {
+						cio.PrintMessage(1, err.Error())
+						return
 					}
 					return
 				}
@@ -65,6 +71,10 @@ func imagePageHandler(w http.ResponseWriter, req *http.Request) {
 				if ttlViews == 0 {
 					http.Redirect(w, req, "/error", 403)
 					err := db.DeleteImage(imgID)
+					if err != nil {
+						cio.PrintMessage(1, err.Error())
+					}
+					err = fsys.DeleteFile(imgPath)
 					if err != nil {
 						cio.PrintMessage(1, err.Error())
 					}
@@ -141,6 +151,12 @@ func imageHandler(w http.ResponseWriter, req *http.Request) {
 					err := db.DeleteImage(imgID)
 					if err != nil {
 						cio.PrintMessage(1, err.Error())
+						return
+					}
+					err = fsys.DeleteFile(imgPath)
+					if err != nil {
+						cio.PrintMessage(1, err.Error())
+						return
 					}
 					return
 				}

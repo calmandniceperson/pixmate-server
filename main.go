@@ -7,11 +7,11 @@
 package main
 
 import (
-	"imgturtle/db"
-	"imgturtle/fsys"
-	"imgturtle/http"
 	"os"
 	"os/exec"
+	"pixmate-server/db"
+	"pixmate-server/fsys"
+	"pixmate-server/http"
 	"runtime"
 )
 
@@ -29,5 +29,8 @@ func main() {
 	// Check if the image storage exists before using it
 	// if it doesn't, this function will create it
 	fsys.Start()
+	go func() {
+		fsys.RemoveOldImages()
+	}()
 	http.Start()
 }
