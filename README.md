@@ -1,6 +1,6 @@
-# imgturtle
+# pixmate
 
-Imgturtle (stylized: imgturtle) is an image sharing service in development.
+Pixmate (stylized: pixmate) is an image sharing service in development.
 
 # What do I need to run it?
     - A PostgreSQL database
