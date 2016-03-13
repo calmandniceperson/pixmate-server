@@ -45,7 +45,7 @@ func RemoveOldImages() error {
 			}
 		}
 	}
-	time.Sleep((60 * 24 * 7) * time.Minute)
+	time.Sleep((60 * 2) * time.Minute)
 	RemoveOldImages()
 	return nil
 }
