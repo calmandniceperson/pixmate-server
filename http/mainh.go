@@ -19,7 +19,7 @@ func errorHandler(w http.ResponseWriter, req *http.Request) {
 }
 
 func mainPageHandler(w http.ResponseWriter, req *http.Request) {
-	http.ServeFile(w, req, "public/imgturtle.html")
+	http.ServeFile(w, req, "public/pixmate.html")
 }
 
 func appsPageHandler(w http.ResponseWriter, req *http.Request) {
