@@ -51,10 +51,12 @@ func RemoveOldImages() error {
 }
 
 func DeleteFile(filename string) error {
-	err := os.Remove(os.Getenv("IMGSTORAGE_LOCATION") + filename)
-	if err != nil {
-		return err
+	if len(filename) > 0 {
+		err := os.Remove(os.Getenv("IMGSTORAGE_LOCATION") + filename)
+		if err != nil {
+			return err
+		}
+		cio.PrintMessage(2, "Deleted file "+filename)
 	}
-	cio.PrintMessage(2, "Deleted file "+filename)
 	return nil
 }
