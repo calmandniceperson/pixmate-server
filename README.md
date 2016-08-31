@@ -1,6 +1,6 @@
 # pixmate
 
-[![Go Report Card](https://goreportcard.com/badge/github.com/calmandniceperson/pixmate-server)
+![Go Report Card](https://goreportcard.com/badge/github.com/calmandniceperson/pixmate-server)
 
 Pixmate (stylized: pixmate) is an image sharing service in development.
 
