@@ -1,5 +1,7 @@
 # pixmate
 
+https://goreportcard.com/badge/github.com/calmandniceperson/pixmate-server
+
 Pixmate (stylized: pixmate) is an image sharing service in development.
 
 # What do I need to run it?
